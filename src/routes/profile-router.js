@@ -14,7 +14,7 @@ const jsonParser = json();
 // const multerUpload = multer({ dest: `${__dirname}/../temp` });
 const profileRouter = new Router();
 
-profileRouter.post('/profile', jsonParser, (request, response, next) => {
+profileRouter.post('/profile', bearerAuthMiddleware, jsonParser, (request, response, next) => {
   if (!request.account || !request.body.username) {
     return next(new HttpError(400, 'AUTH - invalid request'));
   }
