@@ -2,7 +2,7 @@
 
 import faker from 'faker';
 import Profile from '../../models/profile';
-import { createAccountMock, removeAccountMock } from './account-mock';
+import { createAccountMock } from './account-mock';
 
 const createProfileMock = () => {
   const resultMock = {};
@@ -22,11 +22,11 @@ const createProfileMock = () => {
     });
 };
 
-const removeProfileMock = () => {
-  return Promise.all([
-    Profile.remove({}),
-    removeAccountMock(),
-  ]);
-};
+// const removeProfileMock = () => {
+//   return Promise.all([
+//     Profile.remove({}),
+//     removeAccountMock(),
+//   ]);
+// };
 
-export { createProfileMock, removeProfileMock };
+export default { createProfileMock };

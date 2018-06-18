@@ -3,15 +3,15 @@
 import { Router } from 'express';
 import { json } from 'body-parser';
 import HttpError from 'http-errors';
-import multer from 'multer';
-import Profile from '../model/profile';
-import Picture from '../model/picture';
+// import multer from 'multer';
+import Profile from '../models/profile';
+// import Picture from '../models/picture';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
 import logger from '../lib/logger';
-import { s3Upload } from '../lib/s3';
+// import { s3Upload } from '../lib/s3';
 
 const jsonParser = json();
-const multerUpload = multer({ dest: `${__dirname}/../temp` });
+// const multerUpload = multer({ dest: `${__dirname}/../temp` });
 const profileRouter = new Router();
 
 profileRouter.post('/profile', bearerAuthMiddleware, jsonParser, (request, response, next) => {
@@ -57,20 +57,21 @@ profileRouter.put('/profile/:id', bearerAuthMiddleware, jsonParser, (request, re
     .catch(next);
 });
 
-profileRouter.put('/profile/:id/avatar', bearerAuthMiddleware, jsonParser, multerUpload.any(), (request, response, next) => {
-  const file = request.files[0];
-  const key = `${file.filename}.${file.originalname}`;
-  const options = { runValidators: true, new: true };
-  return s3Upload(file.path, key)
-    .then((url) => {
-      return Profile.findByIdAndUpdate(request.params.id, { avatar: url }, options)
-        .then((updatedProfile) => {
-          return response.json(updatedProfile);
-        })
-        .catch(next);
-    })
-    .catch(next);
-});
+// profileRouter.put('/profile/:id/avatar', bearerAuthMiddleware, jsonParser, multerUpload.any(), (request, response, next) => {
+//   const file = request.files[0];
+//   const key = `${file.filename}.${file.originalname}`;
+//   const options = { runValidators: true, new: true };
+//   return s3Upload(file.path, key)
+//     .then((url) => {
+//       return Profile.findByIdAndUpdate(request.params.id, { avatar: url }, options)
+//         .then((updatedProfile) => {
+//           return response.json(updatedProfile);
+//         })
+//         .catch(next);
+//     })
+//     .catch(next);
+// });
+
 profileRouter.delete('/profile/:id', bearerAuthMiddleware, (request, response, next) => {
   return Profile.findByIdAndRemove(request.params.id)
     .then(() => {
