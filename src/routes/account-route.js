@@ -10,7 +10,7 @@ const accountRouter = new Router();
 
 accountRouter.get('/login', (request, response) => {
   logger.log(logger.INFO, '__STEP 3.1__ - receiving code');
-  logger.log(logger.INFO, `req query ${JSON.stringify(request.query)}`);
+  logger.log(logger.INFO, `req query ${JSON.stringify(request)}`);
   let accessToken;
 
   if (!request.query.code) {
