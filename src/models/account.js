@@ -48,7 +48,8 @@ const Account = mongoose.model('account', accountSchema);
 
 Account.create = (username, email, spotifyId, accessToken) => {
   return bcrypt.hash(accessToken, HASH_ROUNDS)
-    .then((accessToken) => {
+    .then((accessTokenHash) => {
+      console.log(accessTokenHash);
       const tokenSeed = crypto.randomBytes(TOKEN_SEED_LENGTH).toString('hex');
       return new Account({
         username,
