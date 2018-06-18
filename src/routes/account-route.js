@@ -6,11 +6,14 @@ import superagent from 'superagent';
 import Account from '../models/account';
 import logger from '../lib/logger';
 
+const SPOTIFY_OAUTH_URL = 'https://accounts.spotify.com/api/token';
+const OPEN_ID_URL = 'https://api.spotify.com/v1/me';
+
 const accountRouter = new Router();
 
 accountRouter.get('/login', (request, response) => {
   logger.log(logger.INFO, '__STEP 3.1__ - receiving code');
-  logger.log(logger.INFO, `req query ${JSON.stringify(request)}`);
+  logger.log(logger.INFO, `req query ${request.query.code}`);
   let accessToken;
 
   if (!request.query.code) {
@@ -19,7 +22,7 @@ accountRouter.get('/login', (request, response) => {
     logger.log(logger.INFO, '__CODE__', request.query.code);
     logger.log(logger.INFO, '__STEP 3.2__ - sending code back');
 
-    return superagent.post(process.env.SPOTIFY_OAUTH_URL)
+    return superagent.post(SPOTIFY_OAUTH_URL)
       .type('form')
       .send({
         code: request.query.code,
@@ -37,7 +40,7 @@ accountRouter.get('/login', (request, response) => {
         }
         accessToken = tokenResponse.body.access_token;
 
-        return superagent.get(process.env.OPEN_ID_URL)
+        return superagent.get(OPEN_ID_URL)
           .set('Authorization', `Bearer ${accessToken}`);
       })
       .then((openIdResponse) => {
