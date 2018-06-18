@@ -4,7 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "eslint . && jest --coverage",
+    "test-nolint": "jest --coverage",
+    "dbon": "mongod",
+    "dboff": "killall mongod",
+    "start": "node index.js"
+  },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/src/__test__/lib/test.env.js"
+    ]
   },
   "repository": {
     "type": "git",
