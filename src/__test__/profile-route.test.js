@@ -21,6 +21,7 @@ describe('PROFILE SCHEMA', () => {
       let accountMock = null;
       return createAccountMock()
         .then((accountSetMock) => {
+          console.log(accountSetMock);
           accountMock = accountSetMock;
           return superagent.post(`${apiURL}/profile`)
             .set('Authorization', `Bearer ${accountMock.accessToken}`)
@@ -29,6 +30,7 @@ describe('PROFILE SCHEMA', () => {
             });
         })
         .then((response) => {
+          console.log(response);
           expect(response.status).toEqual(200);
           expect(response.body.account).toEqual(accountMock.account._id.toString());
         });
@@ -42,7 +44,7 @@ describe('PROFILE SCHEMA', () => {
 //         return superagent.post(`${apiURL}/profile`)
 //           .set('Authorization', `Bearer ${accountSetMock.token}`)
 //           .send({
-//             firstName: 'David',
+//             username: 'Sarah',
 //           });
 //       })
 //       .then(Promise.reject)
@@ -56,8 +58,7 @@ describe('PROFILE SCHEMA', () => {
 //         return superagent.post(`${apiURL}/profile`)
 //           .set('Authorization', 'Bearer INVALIDTOKEN')
 //           .send({
-//             firstName: 'Joanna',
-//             location: '98109',
+//             username: 'Kris',
 //           });
 //       })
 //       .then(Promise.reject)
@@ -73,8 +74,7 @@ describe('PROFILE SCHEMA', () => {
 //         return superagent.post(`${apiURL}/badroute`)
 //           .set('Authorization', `Bearer ${accountMock.token}`)
 //           .send({
-//             firstName: 'John',
-//             location: '98109',
+//             username: 'Blanka',
 //           });
 //       })
 //       .then(Promise.reject)
@@ -83,15 +83,12 @@ describe('PROFILE SCHEMA', () => {
 //       });
 //   });
 //   test('POST - should return a 409 status code if there are duplicate unique key values.', () => {
-//     const mockGoogleID = 'daveyjones@google.com';
 //     return createAccountMock()
 //       .then((accountSetMock) => {
 //         return superagent.post(`${apiURL}/profile`)
 //           .set('Authorization', `Bearer ${accountSetMock.token}`)
 //           .send({
-//             firstName: 'David',
-//             location: '98109',
-//             googleID: mockGoogleID,
+//             username: 'David',
 //           });
 //       })
 //       .then(() => {
@@ -100,9 +97,7 @@ describe('PROFILE SCHEMA', () => {
 //             return superagent.post(`${apiURL}/profile`)
 //               .set('Authorization', `Bearer ${accountSetMock.token}`)
 //               .send({
-//                 firstName: 'Jen',
-//                 location: '98109',
-//                 googleID: mockGoogleID,
+//                 username: 'David',      
 //               });
 //           });
 //       })
@@ -284,7 +279,7 @@ describe('PROFILE SCHEMA', () => {
 //         return superagent.put(`${apiURL}/profile/badID`)
 //           .set('Authorization', `Bearer ${profileToUpdate.accountSetMock.token}`)
 //           .send({
-//             firstName: 'test',
+//             username: 'test',
 //           });
 //       })
 //       .then(Promise.reject)
@@ -293,17 +288,15 @@ describe('PROFILE SCHEMA', () => {
 //       });
 //   });
 //   test('PUT - should return a 409 status code for duplicate unique keys.', () => {
-//     let dummyProfile = null;
+//     let mockProfile = null;
 //     let profileToUpdate = null;
 //     return createAccountMock()
-//       .then((profile) => {
-//         dummyProfile = profile;
+//       .then((profile1) => {
+//         mockProfile = profile1;
 //         return superagent.post(`${apiURL}/profile`)
 //           .set('Authorization', `Bearer ${dummyProfile.token}`)
 //           .send({
-//             firstName: 'Dan',
-//             location: '98109',
-//             googleID: 'dan@google.com',
+//             username: 'Joanna',
 //           });
 //       })
 //       .then(() => {

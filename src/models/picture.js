@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 
 const pictureSchema = mongoose.Schema({
   keywords: [{ 
-    keyword: String
+    keyword: String,
   }],
   url: { 
     type: String,
@@ -21,4 +21,6 @@ const pictureSchema = mongoose.Schema({
   },
 });
 
-export default mongoose.model('picture', pictureSchema);
+const Picture = mongoose.model('picture', pictureSchema);
+
+export default Picture;

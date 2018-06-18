@@ -1,4 +1,5 @@
 'use strict';
+
 import mongoose from 'mongoose';
 
 const profileSchema = mongoose.Schema({
@@ -21,3 +22,5 @@ const profileSchema = mongoose.Schema({
 });
 
 const Profile = mongoose.model('profile', profileSchema);
+
+export default Profile;
