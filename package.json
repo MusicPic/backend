@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "eslint . && jest --coverage",
+    "test": "eslint . && jest --coverage --runInBand --forceExit",
     "test-nolint": "jest --coverage",
     "dbon": "mongod",
     "dboff": "killall mongod",

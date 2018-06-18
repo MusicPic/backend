@@ -3,6 +3,7 @@
 import { Router } from 'express';
 // import { json } from 'body-parser';
 import superagent from 'superagent';
+import HttpError from 'http-errors';
 import Account from '../models/account';
 import logger from '../lib/logger';
 
@@ -12,6 +13,7 @@ const OPEN_ID_URL = 'https://api.spotify.com/v1/me';
 const accountRouter = new Router();
 
 accountRouter.get('/login', (request, response) => {
+  console.log(request);
   logger.log(logger.INFO, '__STEP 3.1__ - receiving code');
   logger.log(logger.INFO, `req query ${request.query.code}`);
   let accessToken;
@@ -49,12 +51,23 @@ accountRouter.get('/login', (request, response) => {
 
         response.cookie('token', 'bleh');
         response.redirect(process.env.CLIENT_URL);
-        return Account.create(
-          openIdResponse.body.display_name, 
-          openIdResponse.body.email, 
-          openIdResponse.body.id, 
-          accessToken,
-        );
+
+        Account.findOne({ email: openIdResponse.body.email })
+          .then((res) => {
+            if (!res) return new HttpError(404, 'No account found');
+
+            if (res.email) {
+              res.accessToken = accessToken;
+              res.save();
+              return res;
+            } 
+            return Account.create(
+              openIdResponse.body.display_name, 
+              openIdResponse.body.email, 
+              openIdResponse.body.id, 
+              accessToken,
+            );
+          });
       })
       .catch((error) => {
         logger.log(logger.INFO, error);
