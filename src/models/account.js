@@ -1,6 +1,12 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+import jsonWebToken from 'jsonwebtoken';
+
+const HASH_ROUNDS = 8;
+const TOKEN_SEED_LENGTH = 128; 
 
 const accountSchema = mongoose.Schema({
   username: {
@@ -22,17 +28,36 @@ const accountSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
+  tokenSeed: {
+    type: String,
+    required: true,
+    unique: true,
+  },
 });
+
+function pCreateToken() {
+  this.tokenSeed = crypto.randomBytes(TOKEN_SEED_LENGTH).toString('hex');
+  return this.save()
+    .then((account) => {
+      return jsonWebToken.sign({ tokenSeed: account.tokenSeed }, process.env.TOKEN_SECRET);
+    });
+}
+accountSchema.methods.pCreateToken = pCreateToken;
 
 const Account = mongoose.model('account', accountSchema);
 
 Account.create = (username, email, spotifyId, accessToken) => {
-  return new Account({
-    username,
-    email,
-    spotifyId,
-    accessToken,
-  }).save();
+  return bcrypt.hash(accessToken, HASH_ROUNDS)
+    .then((accessToken) => {
+      const tokenSeed = crypto.randomBytes(TOKEN_SEED_LENGTH).toString('hex');
+      return new Account({
+        username,
+        email,
+        spotifyId,
+        accessToken,
+        tokenSeed,
+      }).save();
+    });
 };
 
 export default Account;
