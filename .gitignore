@@ -111,6 +111,10 @@ typings/
 
 # dotenv environment variables file
 .env
+src/__test__/lib/test.env.js
+build/__test__/lib/test.env.js
+**.env
+.*.env
 
 
 ### Vim ###
