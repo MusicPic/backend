@@ -10,8 +10,7 @@ const subscriptionKey = '48871d1a4e8547e097836e85ea03fd25';
 // westus, replace "westcentralus" in the URL below with "westus".
 const uriBase = 'https://westus2.api.cognitive.microsoft.com/face/v1.0/detect/';
 
-const imageUrl =
-    'https://upload.wikimedia.org/wikipedia/commons/3/37/Dagestani_man_and_woman.jpg';
+const imageUrl = 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg';
 
 // Request parameters.
 const params = {
@@ -23,7 +22,7 @@ const params = {
 const options = {
   uri: uriBase,
   qs: params,
-  body: '{"url": ' + '"' + imageUrl + '"}',
+  body: `{"url": "${imageUrl}"}`,
   headers: {
     'Content-Type': 'application/json',
     'Ocp-Apim-Subscription-Key': subscriptionKey,
