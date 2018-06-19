@@ -47,27 +47,29 @@ accountRouter.get('/login', (request, response) => {
       })
       .then((openIdResponse) => {
         logger.log(logger.INFO, '__STEP 4__ - request to open id api');
-        logger.log(logger.INFO, openIdResponse.body);
-
-        response.cookie('token', 'bleh');
-        response.redirect(process.env.CLIENT_URL);
+        console.log(openIdResponse.body);
 
         Account.findOne({ email: openIdResponse.body.email })
           .then((res) => {
-            if (!res) return new HttpError(404, 'No account found');
+            if (!res) {
+              logger.log(logger.INFO, 'Creating new account');
+              return Account.create(
+                openIdResponse.body.display_name, 
+                openIdResponse.body.email, 
+                openIdResponse.body.id, 
+                accessToken,
+              );
+            }
+            
+            logger.log(logger.INFO, 'Returning existing account');
+            res.accessToken = accessToken;
+            res.save();
+            return res;
+          })
+          .catch(err => new HttpError(400, err));
 
-            if (res.email) {
-              res.accessToken = accessToken;
-              res.save();
-              return res;
-            } 
-            return Account.create(
-              openIdResponse.body.display_name, 
-              openIdResponse.body.email, 
-              openIdResponse.body.id, 
-              accessToken,
-            );
-          });
+        response.cookie('token', 'bleh');
+        response.redirect(process.env.CLIENT_URL);
       })
       .catch((error) => {
         logger.log(logger.INFO, error);
