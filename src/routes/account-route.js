@@ -13,7 +13,6 @@ const OPEN_ID_URL = 'https://api.spotify.com/v1/me';
 const accountRouter = new Router();
 
 accountRouter.get('/login', (request, response) => {
-  console.log(request);
   logger.log(logger.INFO, '__STEP 3.1__ - receiving code');
   logger.log(logger.INFO, `req query ${request.query.code}`);
   let accessToken;
