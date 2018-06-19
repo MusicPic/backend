@@ -30,14 +30,14 @@ profileRouter.post('/profile', bearerAuthMiddleware, jsonParser, (request, respo
     .catch(next);
 });
 
-// profileRouter.get('/profile/me', bearerAuthMiddleware, (request, response, next) => {
-//   return Profile.findOne({ account: request.account._id })
-//     .then((profile) => {
-//       logger.log(logger.INFO, 'GET - responding with a 200 status code');
-//       return response.json(profile);
-//     })
-//     .catch(next);
-// });
+profileRouter.get('/profile/me', bearerAuthMiddleware, (request, response, next) => {
+  return Profile.findOne({ account: request.account._id })
+    .then((profile) => {
+      logger.log(logger.INFO, 'GET - responding with a 200 status code');
+      return response.json(profile);
+    })
+    .catch(next);
+});
 
 profileRouter.get('/profile/:id', bearerAuthMiddleware, (request, response, next) => {
   return Profile.findById(request.params.id)

@@ -12,7 +12,7 @@ const TOKEN_SEED_LENGTH = 128;
 const accountSchema = mongoose.Schema({
   username: {
     type: String,
-    required: true,
+    // required: true,
   },
   email: {
     type: String,
