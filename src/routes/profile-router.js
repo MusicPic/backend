@@ -15,7 +15,7 @@ const jsonParser = json();
 const profileRouter = new Router();
 
 profileRouter.post('/profile', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  if (!request.account || !request.body.username) {
+  if (!request.body.account || !request.body.username) {
     return next(new HttpError(400, 'AUTH - invalid request'));
   }
   return new Profile({
@@ -29,23 +29,24 @@ profileRouter.post('/profile', bearerAuthMiddleware, jsonParser, (request, respo
     })
     .catch(next);
 });
-profileRouter.get('/profile/me', bearerAuthMiddleware, (request, response, next) => {
-  return Profile.findOne({ account: request.account._id })
-    .then((profile) => {
-      logger.log(logger.INFO, 'GET - responding with a 200 status code');
-      return response.json(profile);
-    })
-    .catch(next);
-});
 
-// profileRouter.get('/profile/:id', bearerAuthMiddleware, (request, response, next) => {
-//   return Profile.findById(request.params.id)
+// profileRouter.get('/profile/me', bearerAuthMiddleware, (request, response, next) => {
+//   return Profile.findOne({ account: request.account._id })
 //     .then((profile) => {
 //       logger.log(logger.INFO, 'GET - responding with a 200 status code');
 //       return response.json(profile);
 //     })
 //     .catch(next);
 // });
+
+profileRouter.get('/profile/:id', bearerAuthMiddleware, (request, response, next) => {
+  return Profile.findById(request.params.id)
+    .then((profile) => {
+      logger.log(logger.INFO, 'GET - responding with a 200 status code');
+      return response.json(profile);
+    })
+    .catch(next);
+});
 
 profileRouter.put('/profile/:id', bearerAuthMiddleware, jsonParser, (request, response, next) => {
   const options = { runValidators: true, new: true };
@@ -57,7 +58,8 @@ profileRouter.put('/profile/:id', bearerAuthMiddleware, jsonParser, (request, re
     .catch(next);
 });
 
-// profileRouter.put('/profile/:id/avatar', bearerAuthMiddleware, jsonParser, multerUpload.any(), (request, response, next) => {
+// profileRouter.put('/profile/:id/avatar', 
+// bearerAuthMiddleware, jsonParser, multerUpload.any(), (request, response, next) => {
 //   const file = request.files[0];
 //   const key = `${file.filename}.${file.originalname}`;
 //   const options = { runValidators: true, new: true };
