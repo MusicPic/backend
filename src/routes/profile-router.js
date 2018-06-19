@@ -15,7 +15,7 @@ const jsonParser = json();
 const profileRouter = new Router();
 
 profileRouter.post('/profile', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  if (!request.account || !request.body.username) {
+  if (!request.body.account || !request.body.username) {
     return next(new HttpError(400, 'AUTH - invalid request'));
   }
   return new Profile({
@@ -29,6 +29,7 @@ profileRouter.post('/profile', bearerAuthMiddleware, jsonParser, (request, respo
     })
     .catch(next);
 });
+
 profileRouter.get('/profile/me', bearerAuthMiddleware, (request, response, next) => {
   return Profile.findOne({ account: request.account._id })
     .then((profile) => {

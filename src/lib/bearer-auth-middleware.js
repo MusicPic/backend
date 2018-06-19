@@ -19,13 +19,16 @@ export default (request, response, next) => {
   if (!request.headers.authorization) {
     return next(new HttpError(400, 'AUTH BEARER - no headers invalid Response'));
   }
+  
   const token = request.headers.authorization.split('Bearer ')[1];
+
   if (!token) {
     return next(new HttpError(401, 'AUTH BEARER - no token invalid Response'));
   }
+
   return promisify(jsonWebToken.verify)(token, process.env.TOKEN_SECRET)
     .catch((error) => {
-      Promise.reject(new HttpError(400, `AUTH BEARER - Json webtoken Error ${error}`));
+      Promise.reject(new HttpError(401, `AUTH BEARER - Json webtoken Error ${error}`));
     })
     .then((decryptedToken) => {
       return Account.findOne({ tokenSeed: decryptedToken.tokenSeed });
