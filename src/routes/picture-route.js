@@ -18,16 +18,25 @@ const jsonParser = json();
 const pictureRouter = new Router();
 
 pictureRouter.post('/picture', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  if (!request.body.url || !request.body.keywords) {
+  console.log('IN PICTURE POST', request.body);
+  if (!request.body.url || !request.body.account) {
     return next(new HttpError(400, 'invalid request.'));
   }
   // return azureUpload(request.body.url)
-  return Profile.findOne({ account: request.account._id })
+  console.log('PICTURE ROUTE', request.body);
+  console.log('PICTURE ROUTE ACCOUNT ID', request.body.account);
+  return Profile.findOne({ account: request.body.account })
     .then((profile) => {
+      console.log('PICTURE ROUTE PROFILE', profile);
       request.body.profile = profile._id;
     })
     .then(() => {
-      return new Picture(request.body).save()
+      return azureUpload(request.body.url)
+        .then((keyword) => {
+          request.body.keyword = keyword;
+          console.log('SAVING PITCTURE DATA', request.body);
+          return new Picture(request.body).save();
+        })
         .then((picture) => {
           logger.log(logger.INFO, 'POST - responding with a 200 status code.');
           return response.json(picture);
@@ -36,3 +45,4 @@ pictureRouter.post('/picture', bearerAuthMiddleware, jsonParser, (request, respo
     .catch(next);
 });
 
+export default pictureRouter;

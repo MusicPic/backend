@@ -6,6 +6,7 @@
   "scripts": {
     "test": "eslint . && jest --coverage --runInBand --forceExit",
     "test-nolint": "jest --coverage --runInBand --forceExit --detectOpenHandles",
+    "test-nolint-noextra": "jest --coverage",
     "dbon": "mkdir -p ./db && mongod --dbpath ./db",
     "dboff": "killall mongod",
     "start": "node index.js"

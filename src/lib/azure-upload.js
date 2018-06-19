@@ -31,7 +31,7 @@ const azureUpload = (imageUrl) => {
     });
 };
 
-azureUpload(trialUrl)
-  .then(response => console.log('response', response))
-  .catch(err => console.log('error!', err.status));
+// azureUpload(trialUrl)
+//   .then(response => console.log('response', response))
+//   .catch(err => console.log('error!', err.status));
 module.exports.azureUpload = azureUpload;
