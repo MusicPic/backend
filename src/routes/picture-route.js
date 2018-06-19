@@ -31,18 +31,29 @@ pictureRouter.post('/picture', bearerAuthMiddleware, jsonParser, (request, respo
       request.body.profile = profile._id;
     })
     .then(() => {
+      console.log('PICTURE ROUTE AZURE', request.body.url);
       return azureUpload(request.body.url)
         .then((keyword) => {
+          console.log('AFTER AZURE', keyword);
           request.body.keyword = keyword;
           console.log('SAVING PITCTURE DATA', request.body);
           return new Picture(request.body).save();
         })
         .then((picture) => {
-          logger.log(logger.INFO, 'POST - responding with a 200 status code.');
-          return response.json(picture);
+          console.log('PICTURE SAVED', picture);
+          return picture;
+        })
+        .then(() => {
+          console.log('PICTURE RETURNING', response.statusCode);
+          return response;
         });
     })
     .catch(next);
 });
 
 export default pictureRouter;
+
+// .then((picture) => {
+//   logger.log(logger.INFO, 'POST - responding with a 200 status code.');
+//   return response.json(picture);
+// });

@@ -31,7 +31,7 @@ describe('PICTURE SCHEMA', () => {
             });
         })
         .then((response) => {
-          expect(response.status).toEqual(200);
+          expect(response.statusCode).toEqual(200);
           expect(response.body.account).toEqual(accountMock.account._id.toString());
         });
         // .catch((err) => {

@@ -7,6 +7,7 @@ require('dotenv').config();
 const trialUrl = 'https://i.imgflip.com/vh6to.jpg';
 
 const azureUpload = (imageUrl) => {
+  console.log('INSIDE AZURE MODULE', imageUrl);
   return superagent.post(process.env.URI_BASE)
     .query({ 
       returnFaceId: 'true',
@@ -27,11 +28,13 @@ const azureUpload = (imageUrl) => {
       return spotifySearchTerm[0];
     })
     .catch((err) => {
+      console.log('AZURE ERROR BLOCK', err.status);
       throw err;
     });
 };
 
-// azureUpload(trialUrl)
+// azureUpload();
 //   .then(response => console.log('response', response))
 //   .catch(err => console.log('error!', err.status));
-module.exports.azureUpload = azureUpload;
+
+export default azureUpload;
