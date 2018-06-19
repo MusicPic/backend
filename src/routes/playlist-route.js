@@ -8,24 +8,34 @@ import Playlist from '../models/playlist';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
 import logger from '../lib/logger';
 import Profile from '../models/profile';
+import getPlaylist from '../lib/spotify-playlist';
 
 const jsonParser = json();
 const playlistRouter = new Router();
+const searchTerm = '';
 
 playlistRouter.post('/profile/playlist', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  if (!request.body.image || !request.body.playlistId) {
-    return next(new HttpError(400, 'invalid request'));
-  }
   return Profile.findOne({ account: request.account._id })
     .then((profile) => {
       request.body.profile = profile._id;
+      console.log('REQ-BODY-PROFILE', request.body.profile);
+      console.log('WHOLE PROFILE', profile);
     })
     .then(() => {
-      return new Playlist(request.body).save()
-        .then((playlist) => {
-          logger.log(logger.INFO, 'POST - responding with a 200 status code.');
-          return response.json(playlist);
+      getPlaylist(searchTerm)
+        .then((data) => {
+          console.log('PLAYLIST DATA', data);
+          Playlist.create(
+            data.body.playlists.items[0].name,
+            data.body.playlists.items[0].id,
+            data.body.playlists.items[0].external_urls.spotify,
+            request.body.profile,
+          );
         });
+    }) 
+    .then(() => {
+      logger.log(logger.INFO, 'POST - responding with a 200 status code.');
+      return response;
     })
     .catch(next);
 });
