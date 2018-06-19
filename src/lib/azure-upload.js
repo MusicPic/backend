@@ -1,16 +1,17 @@
 'use strict';
 
 const request = require('request');
+require('dotenv').config();
 
 // Replace <Subscription Key> with your valid subscription key.
-const subscriptionKey = '48871d1a4e8547e097836e85ea03fd25';
+const subscriptionKey = process.env.AZURE_KEY;
 
 // You must use the same location in your REST call as you used to get your
 // subscription keys. For example, if you got your subscription keys from
 // westus, replace "westcentralus" in the URL below with "westus".
 const uriBase = 'https://westus2.api.cognitive.microsoft.com/face/v1.0/detect/';
 
-const imageUrl = 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg';
+const imageUrl = 'https://kathrynweldsblog.files.wordpress.com/2013/11/ekman-emotion-sstock-photo.png';
 
 // Request parameters.
 const params = {
