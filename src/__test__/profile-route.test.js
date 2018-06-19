@@ -3,7 +3,7 @@
 import superagent from 'superagent';
 import faker from 'faker';
 import { startServer, stopServer } from '../lib/server';
-import { createAccountMock } from './lib/account-mock';
+import { createAccountMock, removeAccountMock } from './lib/account-mock';
 import { removeProfileMock, createProfileMock } from './lib/profile-mock';
 // import { createPlantMock, removePlantMock } from './lib/plant-mock';
 
@@ -12,7 +12,7 @@ const apiURL = `http://localhost:${process.env.PORT}`;
 describe('PROFILE SCHEMA', () => {
   beforeAll(startServer);
   afterEach(removeProfileMock);
-  // afterEach(removePictureMock);
+  afterEach(removeAccountMock);
   afterAll(stopServer);
   // jest.setTimeout(10000);
 
@@ -21,92 +21,99 @@ describe('PROFILE SCHEMA', () => {
       let accountMock = null;
       return createAccountMock()
         .then((accountSetMock) => {
-          console.log(accountSetMock);
+          console.log('ACCOUNTSET', accountSetMock);
+          console.log('PROFILE', accountSetMock.request);
           accountMock = accountSetMock;
+          console.log('ACCOUNT TOKEN', accountSetMock.token);
+          console.log('ACCOUNT ID', accountSetMock.account._id);
           return superagent.post(`${apiURL}/profile`)
-            .set('Authorization', `Bearer ${accountMock.accessToken}`)
+            .set('Authorization', `Bearer ${accountSetMock.token}`)
             .send({
               username: faker.lorem.word(),
             });
         })
         .then((response) => {
+          console.log('????????????????', response.status);
+          console.log('account????', response.body.account);
           expect(response.status).toEqual(200);
           expect(response.body.account).toEqual(accountMock.account._id.toString());
+        });
+    });
+
+    test('POST - should return a 400 status code if there were missing required values.', () => {
+      return createAccountMock()
+        .then((accountSetMock) => {
+          return superagent.post(`${apiURL}/profile`)
+            .set('Authorization', `Bearer ${accountSetMock.token}`)
+            .send({
+              username: 'Sarah',
+            });
+        })
+        .then(Promise.reject)
+        .catch((error) => {
+          expect(error.status).toEqual(400);
+        });
+    });
+    test('POST - should return a 401 for an invalid token.', () => {
+      return createAccountMock()
+        .then(() => {
+          return superagent.post(`${apiURL}/profile`)
+            .set('Authorization', 'Bearer INVALIDTOKEN')
+            .send({
+              username: 'Kris',
+            });
+        })
+        .then(Promise.reject)
+        .catch((error) => {
+          expect(error.status).toEqual(401);
+        });
+    });
+    test('POST - should return a 404 for a bad route.', () => {
+      let accountMock = null;
+      return createAccountMock()
+        .then((accountSetMock) => {
+          accountMock = accountSetMock;
+          return superagent.post(`${apiURL}/badroute`)
+            .set('Authorization', `Bearer ${accountMock.token}`)
+            .send({
+              username: 'Blanka',
+            });
+        })
+        .then(Promise.reject)
+        .catch((error) => {
+          expect(error.status).toEqual(404);
+        });
+    });
+    test('POST - should return a 409 status code if there are duplicate unique key values.', () => {
+      return createAccountMock()
+        .then((accountSetMock) => {
+          return superagent.post(`${apiURL}/profile`)
+            .set('Authorization', `Bearer ${accountSetMock.token}`)
+            .send({
+              username: 'David',
+            });
+        })
+        .then(() => {
+          return createAccountMock()
+            .then((accountSetMock) => {
+              return superagent.post(`${apiURL}/profile`)
+                .set('Authorization', `Bearer ${accountSetMock.token}`)
+                .send({
+                  username: 'David',      
+                });
+            });
+        })
+        .then(Promise.reject)
+        .catch((error) => {
+          expect(error.status).toEqual(409);
         });
     });
   });
 });
  
 
-//   test('POST - should return a 400 status code if there were missing required values.', () => {
-//     return createAccountMock()
-//       .then((accountSetMock) => {
-//         return superagent.post(`${apiURL}/profile`)
-//           .set('Authorization', `Bearer ${accountSetMock.token}`)
-//           .send({
-//             username: 'Sarah',
-//           });
-//       })
-//       .then(Promise.reject)
-//       .catch((error) => {
-//         expect(error.status).toEqual(400);
-//       });
-//   });
-//   test('POST - should return a 401 for an invalid token.', () => {
-//     return createAccountMock()
-//       .then(() => {
-//         return superagent.post(`${apiURL}/profile`)
-//           .set('Authorization', 'Bearer INVALIDTOKEN')
-//           .send({
-//             username: 'Kris',
-//           });
-//       })
-//       .then(Promise.reject)
-//       .catch((error) => {
-//         expect(error.status).toEqual(401);
-//       });
-//   });
-//   test('POST - should return a 404 for a bad route.', () => {
-//     let accountMock = null;
-//     return createAccountMock()
-//       .then((accountSetMock) => {
-//         accountMock = accountSetMock;
-//         return superagent.post(`${apiURL}/badroute`)
-//           .set('Authorization', `Bearer ${accountMock.token}`)
-//           .send({
-//             username: 'Blanka',
-//           });
-//       })
-//       .then(Promise.reject)
-//       .catch((error) => {
-//         expect(error.status).toEqual(404);
-//       });
-//   });
-//   test('POST - should return a 409 status code if there are duplicate unique key values.', () => {
-//     return createAccountMock()
-//       .then((accountSetMock) => {
-//         return superagent.post(`${apiURL}/profile`)
-//           .set('Authorization', `Bearer ${accountSetMock.token}`)
-//           .send({
-//             username: 'David',
-//           });
-//       })
-//       .then(() => {
-//         return createAccountMock()
-//           .then((accountSetMock) => {
-//             return superagent.post(`${apiURL}/profile`)
-//               .set('Authorization', `Bearer ${accountSetMock.token}`)
-//               .send({
-//                 username: 'David',      
-//               });
-//           });
-//       })
-//       .then(Promise.reject)
-//       .catch((error) => {
-//         expect(error.status).toEqual(409);
-//       });
-//   });
-// });
+
+
 
 
 // describe('GET ROUTES', () => {
