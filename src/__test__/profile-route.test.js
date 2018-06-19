@@ -1,7 +1,7 @@
 'use strict';
 
 import superagent from 'superagent';
-import faker from 'faker';
+// import faker from 'faker';
 import { startServer, stopServer } from '../lib/server';
 import { createAccountMock } from './lib/account-mock';
 import { removeProfileMock, createProfileMock } from './lib/profile-mock';
@@ -13,7 +13,6 @@ describe('PROFILE SCHEMA', () => {
   beforeAll(startServer);
   afterEach(removeProfileMock);
   afterAll(stopServer);
-  // jest.setTimeout(10000);
 
   describe('POST /profile', () => {
     test('POST - should return a 200 status code and the newly created profile.', () => {
@@ -24,12 +23,13 @@ describe('PROFILE SCHEMA', () => {
           return superagent.post(`${apiURL}/profile`)
             .set('Authorization', `Bearer ${accountSetMock.token}`)
             .send({
-              username: faker.lorem.word(),
+              username: 'test',
               account: accountSetMock.account._id,
             });
         })
         .then((response) => {
           expect(response.status).toEqual(200);
+          expect(response.body.username).toEqual('test');
           expect(response.body.account).toEqual(accountMock.account._id.toString());
         });
     });
@@ -49,21 +49,21 @@ describe('PROFILE SCHEMA', () => {
         });
     });
 
-    // test('POST - should return a 401 for an invalid token.', () => {
-    //   return createAccountMock()
-    //     .then(() => {
-    //       return superagent.post(`${apiURL}/profile`)
-    //         .set('Authorization', 'Bearer 12344')
-    //         .send({
-    //           username: 'Kris',
-    //           account: '34424234',
-    //         });
-    //     })
-    //     .then(Promise.reject)
-    //     .catch((error) => {
-    //       expect(error.status).toEqual(401);
-    //     });
-    // });
+    test('POST - should return a 401 for an invalid token.', () => {
+      return createAccountMock()
+        .then((mock) => {
+          return superagent.post(`${apiURL}/profile`)
+            .set('Authorization', 'Bearer 1234')
+            .send({
+              username: 'Kris',
+              account: mock.account._id,
+            });
+        })
+        .then(Promise.reject)
+        .catch((error) => {
+          expect(error.status).toEqual(401);
+        });
+    });
 
     test('POST - should return a 404 for a bad route.', () => {
       let accountMock = null;
@@ -71,7 +71,7 @@ describe('PROFILE SCHEMA', () => {
       return createAccountMock()
         .then((accountSetMock) => {
           accountMock = accountSetMock;
-          console.log(accountMock);
+
           return superagent.post(`${apiURL}/badroute`)
             .set('Authorization', `Bearer ${accountMock.token}`)
             .send({
@@ -110,43 +110,44 @@ describe('PROFILE SCHEMA', () => {
       return createProfileMock()
         .then((profileSetMock) => {
           profileMock = profileSetMock;
-          console.log(profileMock);
-          console.log(profileMock.profile);
-          // console.log(profileMock.request);
-          return superagent.get(`${apiURL}/profile/${profileMock.profile.account}`)
+
+          return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
             .set('Authorization', `Bearer ${profileMock.accountSetMock.token}`)
             .then((response) => {
               expect(response.status).toEqual(200);
+              expect(response.body.username).toEqual(profileMock.profile.username);
+              expect(response.body.avatar).toEqual(profileMock.profile.avatar);
+              expect(response.body.account).toEqual(profileMock.profile.account.toString());
             });
         });
     });
   });
+
   test('GET - should return a 400 for no token being passed.', () => {
     let profileMock = null;
     return createProfileMock()
       .then((profileSetMock) => {
         profileMock = profileSetMock;
-        return superagent.get(`${apiURL}/profile/${profileMock.profile.account}`)
-          .then(Promise.reject)
+        return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
           .catch((error) => {
             expect(error.status).toEqual(400);
           });
       });
   });
 
-  // test('GET - should return a 401 for an invalid token.', () => {
-  //   let profileMock = null;
-  //   return createProfileMock()
-  //     .then((profileSetMock) => {
-  //       profileMock = profileSetMock;
-  //       return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
-  //         .set('Authorization', 'Bearer invalidToken')
-  //         .then(Promise.reject)
-  //         .catch((error) => {
-  //           expect(error.status).toEqual(401);
-  //         });
-  //     });
-  // });
+  test('GET - should return a 401 for an invalid token.', () => {
+    let profileMock = null;
+    return createProfileMock()
+      .then((profileSetMock) => {
+        profileMock = profileSetMock;
+        return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
+          .set('Authorization', 'Bearer 1234')
+          .then(Promise.reject)
+          .catch((error) => {
+            expect(error.status).toEqual(401);
+          });
+      });
+  });
 
   test('GET - should return a 404 for an invalid id', () => {
     let profileMock = null;
@@ -161,181 +162,150 @@ describe('PROFILE SCHEMA', () => {
           });
       });
   });
+
+
+  describe('PUT /profile', () => {
+    test('PUT - should return a 200 status code if successful.', () => {
+      let profileToUpdate = null;
+      return createProfileMock()
+        .then((profile) => {
+          profileToUpdate = profile;
+
+          return superagent.put(`${apiURL}/profile/${profileToUpdate.profile._id}`)
+            .set('Authorization', `Bearer ${profileToUpdate.accountSetMock.token}`)
+            .send({
+              username: 'test',
+              avatar: 'avatar_string',
+            });
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.username).toEqual('test');
+          expect(response.body.account).toEqual(profileToUpdate.profile.account.toString());
+          expect(response.body._id).toEqual(profileToUpdate.profile._id.toString());
+        });
+    });
+  });
+
+  test('PUT - should return a 400 status code for no token being passed.', () => {
+    let profileToUpdate = null;
+    return createProfileMock()
+      .then((profile) => {
+        profileToUpdate = profile;
+        return superagent.put(`${apiURL}/profile/${profileToUpdate.profile._id}`)
+          .send({
+            firstName: 'test',
+            account: '1234',
+          });
+      })
+      .then(Promise.reject)
+      .catch((error) => {
+        expect(error.status).toEqual(400);
+      });
+  });
+
+  test('PUT - should return a 401 status code for an invalid token being passed.', () => {
+    let profileToUpdate = null;
+    return createProfileMock()
+      .then((profile) => {
+        profileToUpdate = profile;
+        return superagent.put(`${apiURL}/profile/${profileToUpdate.profile._id}`)
+          .set('Authorization', 'Bearer invalidToken')
+          .send({
+            firstName: 'test',
+            account: '1234',
+          });
+      })
+      .then(Promise.reject)
+      .catch((error) => {
+        expect(error.status).toEqual(401);
+      });
+  });
+
+  test('PUT - should return a 404 status code for a bad id being passed.', () => {
+    let profileToUpdate = null;
+    return createProfileMock()
+      .then((profile) => {
+        profileToUpdate = profile;
+        return superagent.put(`${apiURL}/profile/badID`)
+          .set('Authorization', `Bearer ${profileToUpdate.accountSetMock.token}`)
+          .send({
+            username: 'test',
+          });
+      })
+      .then(Promise.reject)
+      .catch((error) => {
+        expect(error.status).toEqual(404);
+      });
+  });
+
+  test('PUT - should return a 409 status code for duplicate unique keys.', () => {
+    const mock = {};
+    const mock2 = {};
+    return createAccountMock()
+      .then((account1) => {
+        mock.account1 = account1;
+        return superagent.post(`${apiURL}/profile`)
+          .set('Authorization', `Bearer ${mock.account1.token}`)
+          .send({
+            username: 'Joanna',
+            account: mock.account1.account._id,
+          });
+      })
+      .then(() => {
+        return createProfileMock()
+          .then((account2) => {
+            mock2.account2 = account2;
+
+            return superagent.put(`${apiURL}/profile/${mock2.account2.profile._id}`)
+              .set('Authorization', `Bearer ${mock2.account2.accountSetMock.token}`)
+              .send({ username: 'Joanna' });
+          })
+          .then(Promise.reject)
+          .catch((error) => {
+            expect(error.status).toEqual(409);
+          });
+      });
+  });
+
+  describe('DELETE /profile', () => {
+    test('DELETE - Should return 204 for deleted profile', () => {
+      let deleteProfileMock = null;
+      return createProfileMock()
+        .then((profileToDelete) => {
+          deleteProfileMock = profileToDelete;
+          return superagent.delete(`${apiURL}/profile/${deleteProfileMock.profile._id}`)
+            .set('Authorization', `Bearer ${deleteProfileMock.accountSetMock.token}`)
+            .then((response) => {
+              expect(response.status).toEqual(204);
+            });
+        });
+    });
+
+    test('DELETE - should return 400 if not authorized', () => {
+      let deleteProfileMock = null;
+      return createProfileMock()
+        .then((profileToDelete) => {
+          deleteProfileMock = profileToDelete;
+          return superagent.delete(`${apiURL}/profile/${deleteProfileMock.profile._id}`)
+            .then(Promise.reject)
+            .catch((error) => {
+              expect(error.status).toEqual(400);
+            });
+        });
+    });
+
+    test('DELETE - should respond with 404 if no profile found', () => {
+      return createAccountMock()
+        .then((account) => {
+          return superagent.delete(`${apiURL}/profile/BadId`)
+            .set('Authorization', `Bearer ${account.token}`)
+            .then(Promise.reject)
+            .catch((err) => {
+              expect(err.status).toEqual(404);
+            });
+        });
+    });
+  });
 });
-//   test('GET - should return a 200 and the planterbox collection from a user.', () => {
-//     let collectionMock = null;
-//     return createPlantMock()
-//       .then((plantSetMock) => {
-//         collectionMock = plantSetMock;
-//         return superagent.get(`${apiURL}/profile/
-// ${collectionMock.profileMock.profile._id}/planterbox`)
-//           .set('Authorization', `Bearer ${collectionMock.profileMock.accountSetMock.token}`)
-//           .then((response) => {
-//             expect(response.status).toEqual(200);
-//             expect(Array.isArray(response.body)).toBeTruthy();
-//           });
-//       });
-//   });
 
-//   test('GET - should return a 200 status code.', () => {
-//     const resultMock = {};
-//     return createProfileMock()
-//       .then((responseMock) => {
-//         resultMock.responseMock = responseMock;
-//         const { token } = responseMock.accountSetMock;
-//         return superagent.post(`${apiURL}/plants`)
-//           .set('Authorization', `Bearer ${token}`)
-//           .send({
-//             commonName: 'Geranium',
-//             placement: 'indoors',
-//             waterInterval: 1,
-//           })
-//           .then(() => {
-//             return superagent.post(`${apiURL}/plants`)
-//               .set('Authorization', `Bearer ${token}`)
-//               .send({
-//                 commonName: 'Fern',
-//                 placement: 'indoors',
-//                 waterInterval: -10,
-//               })
-//               .then(() => {
-//                 return superagent.get(`${apiURL}/profile/$
-// {resultMock.responseMock.profile._id}/needswater`)
-//                   .set('Authorization', `Bearer ${token}`)
-//                   .then((response) => {
-//                     expect(response.status).toEqual(200);
-//                     expect(response.body).toEqual('');
-//                   });
-//               });
-//           });
-//       });
-//     });
-
-// describe('PUT /profile', () => {
-//   test('PUT - should return a 200 status code if successful.', () => {
-//     let profileToUpdate = null;
-//     return createProfileMock()
-//       .then((profile) => {
-//         profileToUpdate = profile;
-//         return superagent.put(`${apiURL}/profile/${profileToUpdate.profile._id}`)
-//           .set('Authorization', `Bearer ${profileToUpdate.accountSetMock.token}`)
-//           .send({
-//             firstName: 'test',
-//           });
-//       })
-//       .then((response) => {
-//         expect(response.status).toEqual(200);
-//         expect(response.body._id).toEqual(profileToUpdate.profile._id.toString());
-//         expect(response.body.firstName).toEqual('test');
-//       });
-//   });
-//   test('PUT - should return a 200 status code if sucessfully updated profile avatar', () => {
-//     let profileToUpdate = null;
-//     return createProfileMock()
-//       .then((profile) => {
-//         profileToUpdate = profile;
-//         return superagent.put(`${apiURL}/profile/${profileToUpdate.profile._id}/avatar`)
-//           .set('Authorization', `Bearer ${profileToUpdate.accountSetMock.token}`)
-//           .attach('pic', `${__dirname}/assets/dog.jpg`)
-//           .then((response) => {
-//             expect(response.status).toEqual(200);
-//             expect(response.body._id).toEqual(profileToUpdate.profile._id.toString());
-//           });
-//       });
-//   });
-//   test('PUT - should return a 400 status code for no token being passed.', () => {
-//     let profileToUpdate = null;
-//     return createProfileMock()
-//       .then((profile) => {
-//         profileToUpdate = profile;
-//         return superagent.put(`${apiURL}/profile/${profileToUpdate.profile._id}`)
-//           .send({
-//             firstName: 'test',
-//           });
-//       })
-//       .then(Promise.reject)
-//       .catch((error) => {
-//         expect(error.status).toEqual(400);
-//       });
-//   });
-//   test('PUT - should return a 401 status code for an invalid token being passed.', () => {
-//     let profileToUpdate = null;
-//     return createProfileMock()
-//       .then((profile) => {
-//         profileToUpdate = profile;
-//         return superagent.put(`${apiURL}/profile/${profileToUpdate.profile._id}`)
-//           .set('Authorization', 'Bearer invalidToken')
-//           .send({
-//             firstName: 'test',
-//           });
-//       })
-//       .then(Promise.reject)
-//       .catch((error) => {
-//         expect(error.status).toEqual(401);
-//       });
-//   });
-//   test('PUT - should return a 404 status code for a bad id being passed.', () => {
-//     let profileToUpdate = null;
-//     return createProfileMock()
-//       .then((profile) => {
-//         profileToUpdate = profile;
-//         return superagent.put(`${apiURL}/profile/badID`)
-//           .set('Authorization', `Bearer ${profileToUpdate.accountSetMock.token}`)
-//           .send({
-//             username: 'test',
-//           });
-//       })
-//       .then(Promise.reject)
-//       .catch((error) => {
-//         expect(error.status).toEqual(404);
-//       });
-//   });
-//   test('PUT - should return a 409 status code for duplicate unique keys.', () => {
-//     let mockProfile = null;
-//     let profileToUpdate = null;
-//     return createAccountMock()
-//       .then((profile1) => {
-//         mockProfile = profile1;
-//         return superagent.post(`${apiURL}/profile`)
-//           .set('Authorization', `Bearer ${dummyProfile.token}`)
-//           .send({
-//             username: 'Joanna',
-//           });
-//       })
-//       .then(() => {
-//         return createProfileMock()
-//           .then((profile2) => {
-//             profileToUpdate = profile2;
-//             return superagent.put(`${apiURL}/profile/${profileToUpdate.profile._id}`)
-//               .set('Authorization', `Bearer ${profileToUpdate.accountSetMock.token}`)
-//               .send({ googleID: 'dan@google.com' });
-//           })
-//           .then(Promise.reject)
-//           .catch((error) => {
-//             expect(error.status).toEqual(409);
-//           });
-//       });
-//   });
-// });
-
-// describe('DELETE /profile', () => {
-//   test('DELETE - Should return 204 for deleted profile', () => {
-//     let deleteProfileMock = null;
-//     return createProfileMock()
-//       .then((profileToDelete) => {
-//         deleteProfileMock = profileToDelete;
-//         return superagent.delete(`${apiURL}/profile/${deleteProfileMock.profile._id}`)
-//           .set('Authorization', `Bearer ${deleteProfileMock.accountSetMock.token}`)
-//           .then((response) => {
-//             expect(response.status).toEqual(204);
-//           });
-//       });
-//   });
-//   test('DELETE - should return 400 if no account exists', () => {
-//     return superagent.delete(`${apiURL}/profile/InvalidID`)
-//       .then(Promise.reject)
-//       .catch((error) => {
-//         expect(error.status).toEqual(400);
-//       });
-//   });
-// });
