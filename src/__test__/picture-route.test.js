@@ -8,7 +8,7 @@ import { startServer, stopServer } from '../lib/server';
 
 // const apiURL = `http://localhost:${process.env.PORT}`;
 
-describe('PROFILE SCHEMA', () => {
+describe('PICTURE SCHEMA', () => {
   beforeAll(startServer);
   afterAll(stopServer);
 

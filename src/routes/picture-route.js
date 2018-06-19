@@ -3,6 +3,7 @@
 import { Router } from 'express';
 import { json } from 'body-parser';
 import HttpError from 'http-errors';
+import azureUpload from '../lib/azure-upload';
 // import multer from 'multer';
 
 import Picture from '../models/picture';
@@ -20,6 +21,7 @@ pictureRouter.post('/picture', bearerAuthMiddleware, jsonParser, (request, respo
   if (!request.body.url || !request.body.keywords) {
     return next(new HttpError(400, 'invalid request.'));
   }
+  // return azureUpload(request.body.url)
   return Profile.findOne({ account: request.account._id })
     .then((profile) => {
       request.body.profile = profile._id;
