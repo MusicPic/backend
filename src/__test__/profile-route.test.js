@@ -30,7 +30,6 @@ describe('PROFILE SCHEMA', () => {
             });
         })
         .then((response) => {
-          console.log('????????????????', response);
           expect(response.status).toEqual(200);
           expect(response.body.account).toEqual(accountMock.account._id.toString());
         });
