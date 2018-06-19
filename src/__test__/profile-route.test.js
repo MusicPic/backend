@@ -20,6 +20,7 @@ describe('PROFILE SCHEMA', () => {
       return createAccountMock()
         .then((accountSetMock) => {
           accountMock = accountSetMock;
+          console.log('test');
           return superagent.post(`${apiURL}/profile`)
             .set('Authorization', `Bearer ${accountSetMock.token}`)
             .send({
