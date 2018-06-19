@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const spotifyUri = 'https://api.spotify.com/v1/search';
 
-const searchTerm = 'sadness';
+const searchTerm = '';
 
 const getPlaylist = () => {
   return superagent.get(spotifyUri)

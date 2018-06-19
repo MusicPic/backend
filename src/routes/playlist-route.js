@@ -12,9 +12,10 @@ import getPlaylist from '../lib/spotify-playlist';
 
 const jsonParser = json();
 const playlistRouter = new Router();
-const searchTerm = '';
+const searchTerm = 'something';
 
 playlistRouter.post('/profile/playlist', bearerAuthMiddleware, jsonParser, (request, response, next) => {
+  console.log('________req_______', request.account._id);
   return Profile.findOne({ account: request.account._id })
     .then((profile) => {
       request.body.profile = profile._id;
@@ -22,13 +23,13 @@ playlistRouter.post('/profile/playlist', bearerAuthMiddleware, jsonParser, (requ
       console.log('WHOLE PROFILE', profile);
     })
     .then(() => {
-      getPlaylist(searchTerm)
+      return getPlaylist(searchTerm)
         .then((data) => {
           console.log('PLAYLIST DATA', data);
           Playlist.create(
-            data.body.playlists.items[0].name,
-            data.body.playlists.items[0].id,
-            data.body.playlists.items[0].external_urls.spotify,
+            data.name,
+            data.id,
+            data.url,
             request.body.profile,
           );
         });

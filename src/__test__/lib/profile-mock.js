@@ -5,17 +5,17 @@ import Profile from '../../models/profile';
 import { createAccountMock, removeAccountMock } from './account-mock';
 
 const createProfileMock = () => {
-  const resultMock = {};
+  let resultMock = {};
 
   return createAccountMock()
     .then((accountSetMock) => {
-      resultMock.accountSetMock = accountSetMock;
+      resultMock = accountSetMock;
       // console.log(resultMock.accountSetMock.account._id);
 
       return new Profile({
         username: faker.name.firstName(),
         avatar: faker.internet.url(),
-        account: resultMock.accountSetMock.account._id,
+        account: resultMock.account._id,
       }).save();
     })
     .then((profile) => {

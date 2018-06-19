@@ -13,18 +13,21 @@ describe('PLAYLIST SCHEMA', () => {
 
   describe('POST /profile/playlist', () => {
     test('POST - should return a 200 status and create a playlist', () => {
+      let accountMock = null;
       return createProfileMock()
-        .then(() => {
-          const token = process.env.SPOTIFY_OAUTH_TOKEN;
-          console.log(token);
+        .then((accountSetMock) => {
+          accountMock = accountSetMock;
+          console.log('ASM-token', accountSetMock.token);
           return superagent.post(`${apiURL}/profile/playlist`)
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${accountSetMock.token}`)
             .send({
-              searchTerm: 'happiness',
-            })
-            .then((response) => {
-              expect(response.status).toEqual(200);
+              searchTerm: 'sad',
+              account: accountSetMock.account._id,
             });
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.account).toEqual(accountMock.account._id.toString());
         })
         .catch((error) => {
           expect(error.status).toEqual(200);

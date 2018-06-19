@@ -55,7 +55,7 @@ const playlistPostHook = (document, done) => {
 playlistSchema.pre('save', playlistPreHook);
 playlistSchema.post('remove', playlistPostHook);
 
-const Playlist = mongoose.model('account', playlistSchema);
+const Playlist = mongoose.model('playlist', playlistSchema);
 
 Playlist.create = (playlistName, playlistId, playlistUrl, profile) => {
   return new Playlist({
@@ -66,4 +66,4 @@ Playlist.create = (playlistName, playlistId, playlistUrl, profile) => {
   }).save();
 };
 
-export default mongoose.model('playlist', playlistSchema);
+export default Playlist;
