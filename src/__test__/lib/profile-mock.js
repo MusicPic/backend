@@ -2,7 +2,7 @@
 
 import faker from 'faker';
 import Profile from '../../models/profile';
-import { createAccountMock } from './account-mock';
+import { createAccountMock, removeAccountMock } from './account-mock';
 
 const createProfileMock = () => {
   const resultMock = {};
@@ -12,7 +12,7 @@ const createProfileMock = () => {
       resultMock.accountSetMock = accountSetMock;
       return new Profile({
         username: faker.name.word(),
-        avatar: faker.random.image(),
+        avatar: faker.internet.url(),
         account: accountSetMock.account._id,
       }).save();
     })
@@ -22,11 +22,12 @@ const createProfileMock = () => {
     });
 };
 
-// const removeProfileMock = () => {
-//   return Promise.all([
-//     Profile.remove({}),
-//     removeAccountMock(),
-//   ]);
-// };
+const removeProfileMock = () => {
+  console.log('REMOVING PROFILE?');
+  return Promise.all([
+    Profile.remove({}),
+    removeAccountMock(),
+  ]);
+};
 
-export default { createProfileMock };
+export default { createProfileMock, removeProfileMock };

@@ -10,7 +10,7 @@ const subscriptionKey = '48871d1a4e8547e097836e85ea03fd25';
 // westus, replace "westcentralus" in the URL below with "westus".
 const uriBase = 'https://westus2.api.cognitive.microsoft.com/face/v1.0/detect/';
 
-const imageUrl = 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg';
+const imageUrl = 'https://cdn-images-1.medium.com/max/610/1*o8avuWLJRizq04TNpmmqdQ.jpeg';
 
 // Request parameters.
 const params = {
