@@ -11,7 +11,7 @@ const subscriptionKey = process.env.AZURE_KEY;
 // westus, replace "westcentralus" in the URL below with "westus".
 const uriBase = 'https://westus2.api.cognitive.microsoft.com/face/v1.0/detect/';
 
-const imageUrl = 'https://kathrynweldsblog.files.wordpress.com/2013/11/ekman-emotion-sstock-photo.png';
+const imageUrl = 'https://www.otago.ac.nz/cs/groups/public/documents/webcontent/otago005091.jpg';
 
 // Request parameters.
 const params = {
@@ -29,14 +29,20 @@ const options = {
     'Ocp-Apim-Subscription-Key': subscriptionKey,
   },
 };
-console.log('options', options);
+// console.log('options', options);
 
 request.post(options, (error, response, body) => {
   if (error) {
     console.log('Error: ', error);
     return;
   }
-  const jsonResponse = JSON.stringify(JSON.parse(body), null, '  ');
-  console.log('JSON Response\n');
-  console.log(jsonResponse);
+  // console.log(body);
+  const parsedJSON = JSON.parse(body);
+  // console.log('____PARSED-BODY____', parsedJSON[0].faceAttributes.emotion);
+  const emotionData = parsedJSON[0].faceAttributes.emotion;
+  console.log(emotionData);
+  console.log(emotionData.anger);
+  // const jsonResponse = JSON.stringify(JSON.parse(body), null, '  ');
+  // console.log('JSON Response\n');
+  // console.log(jsonResponse);
 });

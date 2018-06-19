@@ -3,7 +3,7 @@
 import { Router } from 'express';
 import { json } from 'body-parser';
 import HttpError from 'http-errors';
-import multer from 'multer';
+// import multer from 'multer';
 
 import Picture from '../models/picture';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
