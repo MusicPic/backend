@@ -12,7 +12,12 @@ const createAccountMock = () => {
     accessToken: faker.lorem.words(),
   };
   
-  return Account.create(mock.request.username, mock.request.email, mock.request.spotifyId, mock.request.accessToken)
+  return Account.create(
+    mock.request.username, 
+    mock.request.email, 
+    mock.request.spotifyId, 
+    mock.request.accessToken,
+  )
     .then((account) => {
       mock.account = account;
       return account.pCreateToken();

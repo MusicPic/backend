@@ -3,7 +3,7 @@
 import superagent from 'superagent';
 import faker from 'faker';
 import { startServer, stopServer } from '../lib/server';
-import { createAccountMock, removeAccountMock } from './lib/account-mock';
+import { createAccountMock } from './lib/account-mock';
 import { removeProfileMock, createProfileMock } from './lib/profile-mock';
 // import { createPlantMock, removePlantMock } from './lib/plant-mock';
 
@@ -105,11 +105,6 @@ describe('PROFILE SCHEMA', () => {
   });
 });
  
-
-
-
-
-
 // describe('GET ROUTES', () => {
 //   describe('GET /profile', () => { 
 //     test('GET - should return a 200 status code and the newly created profile.', () => {
@@ -168,7 +163,8 @@ describe('PROFILE SCHEMA', () => {
 //     return createPlantMock()
 //       .then((plantSetMock) => {
 //         collectionMock = plantSetMock;
-//         return superagent.get(`${apiURL}/profile/${collectionMock.profileMock.profile._id}/planterbox`)
+//         return superagent.get(`${apiURL}/profile/
+// ${collectionMock.profileMock.profile._id}/planterbox`)
 //           .set('Authorization', `Bearer ${collectionMock.profileMock.accountSetMock.token}`)
 //           .then((response) => {
 //             expect(response.status).toEqual(200);
@@ -176,7 +172,7 @@ describe('PROFILE SCHEMA', () => {
 //           });
 //       });
 //   });
-//   test('GET - should return a 200 status code and the each plant that needs to be watered.', () => {
+//   test('GET - should return a 200 status code.', () => {
 //     const resultMock = {};
 //     return createProfileMock()
 //       .then((responseMock) => {
@@ -198,11 +194,13 @@ describe('PROFILE SCHEMA', () => {
 //                 waterInterval: -10,
 //               })
 //               .then(() => {
-//                 return superagent.get(`${apiURL}/profile/${resultMock.responseMock.profile._id}/needswater`)
+//                 return superagent.get(`${apiURL}/profile/$
+// {resultMock.responseMock.profile._id}/needswater`)
 //                   .set('Authorization', `Bearer ${token}`)
 //                   .then((response) => {
 //                     expect(response.status).toEqual(200);
-//                     expect(response.body).toEqual('You have no plants that need watering today.');
+//                     expect(response.body).toEqual('You have no plants that need 
+// watering today.');
 //                   });
 //               });
 //           });

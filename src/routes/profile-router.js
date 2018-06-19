@@ -58,7 +58,8 @@ profileRouter.put('/profile/:id', bearerAuthMiddleware, jsonParser, (request, re
     .catch(next);
 });
 
-// profileRouter.put('/profile/:id/avatar', bearerAuthMiddleware, jsonParser, multerUpload.any(), (request, response, next) => {
+// profileRouter.put('/profile/:id/avatar', 
+// bearerAuthMiddleware, jsonParser, multerUpload.any(), (request, response, next) => {
 //   const file = request.files[0];
 //   const key = `${file.filename}.${file.originalname}`;
 //   const options = { runValidators: true, new: true };
