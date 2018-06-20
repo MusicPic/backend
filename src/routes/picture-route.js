@@ -18,33 +18,32 @@ const jsonParser = json();
 const pictureRouter = new Router();
 
 pictureRouter.post('/picture', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  console.log('IN PICTURE POST', request.body);
+  logger.log(logger.INFO, 'IN PICTURE POST', request.body);
   if (!request.body.url || !request.body.account) {
     return next(new HttpError(400, 'invalid request.'));
   }
-  // return azureUpload(request.body.url)
-  console.log('PICTURE ROUTE', request.body);
-  console.log('PICTURE ROUTE ACCOUNT ID', request.body.account);
+  logger.log(logger.INFO, 'PICTURE ROUTE', request.body);
+  logger.log(logger.INFO, 'PICTURE ROUTE ACCOUNT ID', request.body.account);
   return Profile.findOne({ account: request.body.account })
     .then((profile) => {
-      console.log('PICTURE ROUTE PROFILE', profile);
+      logger.log(logger.INFO, 'PICTURE ROUTE PROFILE', profile);
       request.body.profile = profile._id;
     })
     .then(() => {
-      console.log('PICTURE ROUTE AZURE', request.body.url);
+      logger.log(logger.INFO, 'PICTURE ROUTE AZURE', request.body.url);
       return azureUpload(request.body.url)
         .then((keyword) => {
-          console.log('AFTER AZURE', keyword);
+          logger.log(logger.INFO, 'AFTER AZURE', keyword);
           request.body.keyword = keyword;
-          console.log('SAVING PITCTURE DATA', request.body);
+          logger.log(logger.INFO, 'SAVING PITCTURE DATA', request.body);
           return new Picture(request.body).save();
         })
         .then((picture) => {
-          console.log('PICTURE SAVED', picture);
+          logger.log(logger.INFO, 'PICTURE SAVED', picture);
           return picture;
         })
         .then(() => {
-          console.log('PICTURE RETURNING', response.statusCode);
+          logger.log(logger.INFO, 'PICTURE RETURNING', response.statusCode);
           return response;
         });
     })
@@ -52,8 +51,3 @@ pictureRouter.post('/picture', bearerAuthMiddleware, jsonParser, (request, respo
 });
 
 export default pictureRouter;
-
-// .then((picture) => {
-//   logger.log(logger.INFO, 'POST - responding with a 200 status code.');
-//   return response.json(picture);
-// });

@@ -21,7 +21,6 @@ describe('PICTURE SCHEMA', () => {
       let accountMock = null;
       return createProfileMock()
         .then((accountSetMock) => {
-          console.log('WHAT TO GET', accountSetMock.token);
           accountMock = accountSetMock;
           return superagent.post(`${apiURL}/picture`)
             .set('Authorization', `Bearer ${accountSetMock.token}`)
@@ -34,9 +33,6 @@ describe('PICTURE SCHEMA', () => {
           expect(response.statusCode).toEqual(200);
           expect(response.body.account).toEqual(accountMock.account._id.toString());
         });
-        // .catch((err) => {
-        //   console.log('ERROR IS WHAT', err);
-        // });
     });
   });
 });

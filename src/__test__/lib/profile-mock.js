@@ -6,7 +6,7 @@ import { createAccountMock, removeAccountMock } from './account-mock';
 
 const createProfileMock = () => {
   let resultMock = {};
-
+  // this function returns an object with account, profile and token properties
   return createAccountMock()
     .then((accountSetMock) => {
       resultMock = accountSetMock;
