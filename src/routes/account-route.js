@@ -18,7 +18,7 @@ accountRouter.get('/login', (request, response) => {
   let accessToken;
 
   if (!request.query.code) {
-    response.redirect(process.env.CLIENT_URL);
+    // response.redirect(process.env.CLIENT_URL);
   } else {
     logger.log(logger.INFO, '__CODE__', request.query.code);
     logger.log(logger.INFO, '__STEP 3.2__ - sending code back');
@@ -46,29 +46,50 @@ accountRouter.get('/login', (request, response) => {
       })
       .then((openIdResponse) => {
         logger.log(logger.INFO, '__STEP 4__ - request to open id api');
-        console.log(openIdResponse.body);
 
         Account.findOne({ email: openIdResponse.body.email })
-          .then((res) => {
-            if (!res) {
+          .then((resAccount) => {
+            if (!resAccount) {
               logger.log(logger.INFO, 'Creating new account');
               return Account.create(
                 openIdResponse.body.display_name, 
                 openIdResponse.body.email, 
                 openIdResponse.body.id, 
                 accessToken,
-              );
+              )
+                .then((account) => {
+                  return account.pCreateToken();
+                })
+                .then((token) => {
+                  logger.log(logger.INFO, 'Returning newly created account');
+                  response.cookie('TOKEN_COOKIE_KEY', token, { maxAge: 90000 });
+                  response.redirect(process.env.CLIENT_URL);
+                  // return response.json({ token });
+                })
+                .catch(() => {
+                  response.redirect(process.env.CLIENT_URL);
+                });
             }
-            
-            logger.log(logger.INFO, 'Returning existing account');
-            res.accessToken = accessToken;
-            res.save();
-            return res;
-          })
-          .catch(err => new HttpError(400, err));
 
-        response.cookie('token', 'bleh');
-        response.redirect(process.env.CLIENT_URL);
+            logger.log(logger.INFO, 'old account block');
+            resAccount.accessToken = accessToken;
+
+            return resAccount.save()
+              .then((account) => {
+                return account.pCreateToken();
+              })
+              .then((token) => {
+                response.cookie('TOKEN_COOKIE_KEY', token, { maxAge: 90000 });
+                response.redirect(process.env.CLIENT_URL);
+                // return response.json({ token });
+              })
+              .catch(() => {
+                response.redirect(process.env.CLIENT_URL);
+              });
+          })
+          .catch(() => {
+            response.redirect(process.env.CLIENT_URL);
+          });
       })
       .catch((error) => {
         logger.log(logger.INFO, error);
