@@ -25,8 +25,14 @@ const profileSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
-});
+}, { usePushEach: true });
 
 const Profile = mongoose.model('profile', profileSchema);
+
+Profile.create = (username, account) => {
+  return new Profile({
+    username, account,
+  }).save();
+};
 
 export default Profile;
