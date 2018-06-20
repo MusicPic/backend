@@ -4,16 +4,13 @@ import { Router } from 'express';
 import { json } from 'body-parser';
 import HttpError from 'http-errors';
 import azureUpload from '../lib/azure-upload';
-// import multer from 'multer';
 
 import Picture from '../models/picture';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
 import logger from '../lib/logger';
 import Profile from '../models/profile';
-// import { s3Upload } from '../lib/s3';
 
 const jsonParser = json();
-// const multerUpload = multer({ dest: `${__dirname}/../temp` });
 
 const pictureRouter = new Router();
 

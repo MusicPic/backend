@@ -12,10 +12,15 @@ export default (error, request, response, next) => { // eslint-disable-line no-u
   }
 
   const errorMessage = error.message.toLowerCase();
+  logger.log(logger.INFO, errorMessage);
 
   if (errorMessage.includes('objectid failed')) {
     logger.log(logger.INFO, 'Responding with 404');
     return response.sendStatus(404);
+  }
+  if (errorMessage.includes('jwt malformed')) {
+    logger.log(logger.INFO, 'Responding with 401');
+    return response.sendStatus(401);
   }
   if (errorMessage.includes('validation failed')) {
     logger.log(logger.INFO, 'Responding with 400');
@@ -31,6 +36,6 @@ export default (error, request, response, next) => { // eslint-disable-line no-u
   }
   logger.log(logger.ERROR, 'Responding with 500');
   logger.log(logger.ERROR, error);
-  console.log('LOGGER 500 ERROR', error);
+  logger.log(logger.INFO, `LOGGER 500 ERROR, ${error}`);
   return response.sendStatus(500);
 };

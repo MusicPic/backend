@@ -1,13 +1,8 @@
 'use strict';
 
-// import superagent from 'superagent';
-import faker from 'faker';
 import superagent from 'superagent';
 import { startServer, stopServer } from '../lib/server';
-import { createAccountMock, removeAccountMock } from './lib/account-mock';
 import { createProfileMock, removeProfileMock } from './lib/profile-mock';
-
-// import { removeProfileMock, createProfileMock } from './lib/profile-mock';
 
 const apiURL = `http://localhost:${process.env.PORT}`;
 
