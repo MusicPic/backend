@@ -1,41 +1,39 @@
 'use strict';
 
-const request = require('request');
+const superagent = require('superagent');
+require('dotenv').config();
 
-// Replace <Subscription Key> with your valid subscription key.
-const subscriptionKey = '48871d1a4e8547e097836e85ea03fd25';
-
-// You must use the same location in your REST call as you used to get your
-// subscription keys. For example, if you got your subscription keys from
-// westus, replace "westcentralus" in the URL below with "westus".
-const uriBase = 'https://westus2.api.cognitive.microsoft.com/face/v1.0/detect/';
-
-const imageUrl = 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg';
-
-// Request parameters.
-const params = {
-  returnFaceId: 'true',
-  returnFaceLandmarks: 'false',
-  returnFaceAttributes: 'emotion',
+const azureUpload = (imageUrl) => {
+  // this function expects an image url, then sends a request to azure face api
+  return superagent.post(process.env.URI_BASE)
+    .query({ 
+      returnFaceId: 'true',
+      returnFaceLandmarks: 'false',
+      returnFaceAttributes: 'emotion',
+    })
+    .type('application/json')
+    .set('Ocp-Apim-Subscription-Key', process.env.AZURE_KEY)
+    .send(`{"url": "${imageUrl}"}`)
+    .then((response) => {
+      // emotionData holds an object with the emotion keys on the first response object 
+      // (the first face, if the image has many faces)
+      const emotionData = response.body[0].faceAttributes.emotion;
+      const getMax = (object) => {
+        return Object.keys(object).filter((x) => {
+          return object[x] === Math.max.apply(null, Object.values(object));
+        });
+      };
+      // this is finding the most significant emotion from the emotion keys in emotionData
+      const spotifySearchTerm = getMax(emotionData);
+      // it should return an array of strings, the first index, 
+      // beging the single most significant emotion -- 'sadness'
+      return spotifySearchTerm[0];
+    })
+    .catch((err) => {
+      throw err;
+    });
 };
+// to test this file manually, navigate to this folder in the CLI, update the .env file and call 
+// azureUpload(trialUrl)
 
-const options = {
-  uri: uriBase,
-  qs: params,
-  body: `{"url": "${imageUrl}"}`,
-  headers: {
-    'Content-Type': 'application/json',
-    'Ocp-Apim-Subscription-Key': subscriptionKey,
-  },
-};
-console.log('options', options);
-
-request.post(options, (error, response, body) => {
-  if (error) {
-    console.log('Error: ', error);
-    return;
-  }
-  const jsonResponse = JSON.stringify(JSON.parse(body), null, '  ');
-  console.log('JSON Response\n');
-  console.log(jsonResponse);
-});
+export default azureUpload;

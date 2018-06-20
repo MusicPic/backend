@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jsonWebToken from 'jsonwebtoken';
 import HttpError from 'http-errors';
+import logger from '../lib/logger';
 
 const HASH_ROUNDS = 8;
 const TOKEN_SEED_LENGTH = 128; 
@@ -12,7 +13,6 @@ const TOKEN_SEED_LENGTH = 128;
 const accountSchema = mongoose.Schema({
   username: {
     type: String,
-    required: true,
   },
   email: {
     type: String,
@@ -50,7 +50,8 @@ function pCreateToken() {
   return this.save()
     .then((account) => {
       return jsonWebToken.sign({ tokenSeed: account.tokenSeed }, process.env.TOKEN_SECRET);
-    });
+    })
+    .catch(() => new HttpError(401, 'Error creating token'));
 }
 accountSchema.methods.verifyAccessToken = verifyAccessToken;
 accountSchema.methods.pCreateToken = pCreateToken;
@@ -60,7 +61,7 @@ const Account = mongoose.model('account', accountSchema);
 Account.create = (username, email, spotifyId, accessToken) => {
   return bcrypt.hash(accessToken, HASH_ROUNDS)
     .then((accessTokenHash) => {
-      console.log(accessTokenHash);
+      logger.log(logger.INFO, `${accessTokenHash}`);
       const tokenSeed = crypto.randomBytes(TOKEN_SEED_LENGTH).toString('hex');
       return new Account({
         username,

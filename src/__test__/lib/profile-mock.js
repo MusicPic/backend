@@ -1,32 +1,37 @@
 'use strict';
 
 import faker from 'faker';
+import logger from '../../lib/logger';
 import Profile from '../../models/profile';
-import { createAccountMock } from './account-mock';
+import { createAccountMock, removeAccountMock } from './account-mock';
 
 const createProfileMock = () => {
-  const resultMock = {};
+  let resultMock = {};
 
+  // this function returns an object with account, profile and token properties
   return createAccountMock()
     .then((accountSetMock) => {
-      resultMock.accountSetMock = accountSetMock;
+      resultMock = accountSetMock;
+      logger.log(logger.INFO, `ACCOUNT ID in MOCK, ${resultMock.account._id}`);
+
       return new Profile({
-        username: faker.name.word(),
-        avatar: faker.random.image(),
-        account: accountSetMock.account._id,
+        username: faker.name.firstName(),
+        avatar: faker.internet.url(),
+        account: resultMock.account._id,
       }).save();
     })
     .then((profile) => {
       resultMock.profile = profile;
+      logger.log(logger.INFO, `PROFILE MOCK RETURS:${resultMock}`);
       return resultMock;
     });
 };
 
-// const removeProfileMock = () => {
-//   return Promise.all([
-//     Profile.remove({}),
-//     removeAccountMock(),
-//   ]);
-// };
+const removeProfileMock = () => {
+  return Promise.all([
+    Profile.remove({}),
+    removeAccountMock(),
+  ]);
+};
 
-export default { createProfileMock };
+export { createProfileMock, removeProfileMock };

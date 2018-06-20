@@ -10,9 +10,14 @@ const createAccountMock = () => {
     email: faker.internet.email(),
     spotifyId: faker.internet.ip(),
     accessToken: faker.lorem.words(),
-
   };
-  return Account.create(mock.request.username, mock.request.email, mock.request.spotifyId, mock.request.accessToken)
+  
+  return Account.create(
+    mock.request.username, 
+    mock.request.email, 
+    mock.request.spotifyId, 
+    mock.request.accessToken,
+  )
     .then((account) => {
       mock.account = account;
       return account.pCreateToken();

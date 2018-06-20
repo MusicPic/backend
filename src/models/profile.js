@@ -14,6 +14,12 @@ const profileSchema = mongoose.Schema({
   picture: [{
     type: String,
   }],
+  playlists: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'playlist',
+    },
+  ],
   account: {
     type: mongoose.Schema.ObjectId,
     required: true,
