@@ -25,7 +25,9 @@ const profileSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
-});
+}, { usePushEach: true });
+
+// Profile.addplaylist
 
 const Profile = mongoose.model('profile', profileSchema);
 
