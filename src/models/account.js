@@ -12,7 +12,7 @@ const TOKEN_SEED_LENGTH = 128;
 const accountSchema = mongoose.Schema({
   username: {
     type: String,
-    required: true,
+    // required: true,
   },
   email: {
     type: String,
@@ -50,7 +50,8 @@ function pCreateToken() {
   return this.save()
     .then((account) => {
       return jsonWebToken.sign({ tokenSeed: account.tokenSeed }, process.env.TOKEN_SECRET);
-    });
+    })
+    .catch(() => new HttpError(401, 'Error creating token'));
 }
 accountSchema.methods.verifyAccessToken = verifyAccessToken;
 accountSchema.methods.pCreateToken = pCreateToken;
