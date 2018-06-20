@@ -27,8 +27,12 @@ const profileSchema = mongoose.Schema({
   },
 }, { usePushEach: true });
 
-// Profile.addplaylist
-
 const Profile = mongoose.model('profile', profileSchema);
+
+Profile.create = (username, account) => {
+  return new Profile({
+    username, account,
+  }).save();
+};
 
 export default Profile;

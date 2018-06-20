@@ -4,6 +4,7 @@ import { Router } from 'express';
 import superagent from 'superagent';
 import Account from '../models/account';
 import logger from '../lib/logger';
+import Profile from '../models/profile';
 
 const SPOTIFY_OAUTH_URL = 'https://accounts.spotify.com/api/token';
 const OPEN_ID_URL = 'https://api.spotify.com/v1/me';
@@ -56,12 +57,19 @@ accountRouter.get('/login', (request, response) => {
                 accessToken,
               )
                 .then((account) => {
+                  Profile.create(
+                    account.username,
+                    account._id,
+                  );
+                })
+
+                .then((account) => {
                   return account.pCreateToken();
                 })
                 .then((token) => {
                   logger.log(logger.INFO, 'Returning newly created account');
                   response.cookie('TOKEN_COOKIE_KEY', token, { maxAge: 90000 });
-                  response.redirect(process.env.CLIENT_URL);
+                  response.redirect(`${process.env.CLIENT_URL}/dashboard`);
                 })
                 .catch(() => {
                   response.redirect(process.env.CLIENT_URL);
@@ -77,7 +85,7 @@ accountRouter.get('/login', (request, response) => {
               })
               .then((token) => {
                 response.cookie('TOKEN_COOKIE_KEY', token, { maxAge: 90000 });
-                response.redirect(process.env.CLIENT_URL);
+                response.redirect(`${process.env.CLIENT_URL}/dashboard`);
               })
               .catch(() => {
                 response.redirect(process.env.CLIENT_URL);
@@ -89,7 +97,7 @@ accountRouter.get('/login', (request, response) => {
       })
       .catch((error) => {
         logger.log(logger.INFO, error);
-        response.redirect(`${process.env.CLIENT_URL}?error=oauth`);
+        response.redirect(process.env.CLIENT_URL);
       });
   }
   return null;

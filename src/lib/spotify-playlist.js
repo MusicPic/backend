@@ -15,7 +15,7 @@ const getPlaylist = (searchTerm) => {
       limit: 1,
     })
     .type('application/json')
-    .set({ Authorization: `Bearer ${process.env.SPOTIFY_OAUTH_TOKEN}` })
+    .set({ Authorization: 'Bearer BQDrfW7_Ssv6sB_r0tAW0mhh9W_4VXI9gPtmXrpendo8KU3APNgrQaWA0HkGyCxTIOV7hKLt7v_WjXMwCps5OyBjnsbq-D25nvhIPL80YjtZMyY8CWQdp-WEKcnGahlPR1Q3iEkjwf4qLKPaU1nH9u6DkP0h4t9J-k1xKzpQGfFuitKTiXcnfl2D39achmzh7g1_efU' })
     .then((data) => {
       return data.body.playlists.items[0];
     })
