@@ -2,21 +2,23 @@
 
 import { Router } from 'express';
 import { json } from 'body-parser';
+import multer from 'multer';
 import HttpError from 'http-errors';
 import azureUpload from '../lib/azure-upload';
-
 import Picture from '../models/picture';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
 import logger from '../lib/logger';
 import Profile from '../models/profile';
 
 const jsonParser = json();
+const multerUpload = multer({ dest: `${__dirname}/../temp` });
 
 const pictureRouter = new Router();
+// multer attaches a files propert to the request object, multerUpload.single(feildname)- feildname being a string, i think is what we want
 
-pictureRouter.post('/picture', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  logger.log(logger.INFO, 'IN PICTURE POST', request.body);
-  if (!request.body.url || !request.body.account) {
+pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.any(), jsonParser, (request, response, next) => {
+  console.log('IN PICTURE POST', request.body);
+  if (!request.body.picture || !request.body.account) {
     return next(new HttpError(400, 'invalid request.'));
   }
   logger.log(logger.INFO, 'PICTURE ROUTE', request.body);
@@ -27,11 +29,11 @@ pictureRouter.post('/picture', bearerAuthMiddleware, jsonParser, (request, respo
       request.body.profile = profile._id;
     })
     .then(() => {
-      logger.log(logger.INFO, 'PICTURE ROUTE AZURE', request.body.url);
+      logger.log(logger.INFO, 'PICTURE ROUTE AZURE', request.body.picture);
       // first upload to AWS
       // then return new Picture
       // then upload picture.url to azure
-      return azureUpload(request.body.url)
+      return azureUpload(request.body.picture)
         .then((keyword) => {
           logger.log(logger.INFO, 'AFTER AZURE', keyword);
           request.body.keyword = keyword;

@@ -2,6 +2,7 @@
 
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import logger from './logger';
 import errorMiddleware from './error-middleware';
 import accountRouter from '../routes/account-route';
@@ -13,6 +14,7 @@ const app = express();
 let server = null;
 
 // routes will be app.use'd here
+app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 app.use(accountRouter);
 app.use(profileRouter);
 app.use(playlistRouter);
