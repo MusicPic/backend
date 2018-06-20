@@ -19,16 +19,21 @@ describe('PLAYLIST SCHEMA', () => {
       return createProfileMock()
         .then((accountSetMock) => {
           accountMock = accountSetMock;
+          // console.log(accountMock);
           logger.log(logger.INFO, `ASM-token, ${accountSetMock.token}`);
           return superagent.post(`${apiURL}/profile/playlist`)
             .set('Authorization', `Bearer ${accountSetMock.token}`);
         })
         .then((response) => {
+          console.log(response.body);
+          // console.log(accountMock);
+          // accountMock.profile = response.body;
+          // console.log(accountMock);
+          // logger.log(logger.INFO, JSON.stringify(response.body.playlist));
+          // accountMock.playlist = response.body.profile.playlist;
           expect(response.status).toEqual(200);
-          expect(response.body.account).toEqual(accountMock.account._id.toString());
-        })
-        .catch((error) => {
-          expect(error.status).toEqual(200);
+          // expect(response.body.playlist.profile).toEqual(accountMock.profile._id.toString());
+          // expect(response.body.playlist.playlistName).toEqual(accountMock.)
         });
     });
   });

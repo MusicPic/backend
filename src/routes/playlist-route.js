@@ -19,8 +19,8 @@ playlistRouter.post('/profile/playlist', bearerAuthMiddleware, jsonParser, (requ
     .then((profile) => {
       return getPlaylist(searchTerm)
         .then((data) => {
-          logger.log(logger.INFO, `PLAYLIST DATA, ${data}`);
-          Playlist.create(
+          logger.log(logger.INFO, `PLAYLIST DATA, ${JSON.stringify(data)}`);
+          return Playlist.create(
             data.name,
             data.id,
             data.external_urls.spotify,
@@ -28,13 +28,14 @@ playlistRouter.post('/profile/playlist', bearerAuthMiddleware, jsonParser, (requ
           )
             .then((playlist) => {
               profile.playlists.push(playlist);
+              return profile;
             });
         })
         .catch(error => logger.log(logger.ERROR, `${error}`));
     }) 
-    .then(() => {
+    .then((profile) => {
       logger.log(logger.INFO, 'POST - responding with a 200 status code.');
-      return response;
+      return response.json({ profile });
     })
     .catch(next);
 });
