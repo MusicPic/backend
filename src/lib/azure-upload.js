@@ -1,45 +1,39 @@
 'use strict';
 
-const request = require('request');
+// const request = require('request');
+const superagent = require('superagent');
 require('dotenv').config();
 
-const subscriptionKey = process.env.AZURE_KEY;
+const trialUrl = 'https://i.imgflip.com/vh6to.jpg';
 
-const uriBase = 'https://westus2.api.cognitive.microsoft.com/face/v1.0/detect/';
-
-const imageUrl = 'http://www.rmmagazine.com/wp-content/uploads/2012/08/Sad-Face.png';
-
-const params = {
-  returnFaceId: 'true',
-  returnFaceLandmarks: 'false',
-  returnFaceAttributes: 'emotion',
-};
-
-const options = {
-  uri: uriBase,
-  qs: params,
-  body: `{"url": "${imageUrl}"}`,
-  headers: {
-    'Content-Type': 'application/json',
-    'Ocp-Apim-Subscription-Key': subscriptionKey,
-  },
-};
-
-const azureUpload = request.post(options, (error, response, body) => {
-  if (error) {
-    console.log('Error: ', error);
-    return;
-  }
-  const parsedJSON = JSON.parse(body);
-  const emotionData = parsedJSON[0].faceAttributes.emotion;
-  console.log(emotionData);
-  const getMax = (object) => {
-    return Object.keys(object).filter((x) => {
-      return object[x] === Math.max.apply(null, Object.values(object));
+const azureUpload = (imageUrl) => {
+  // this function expects an image url, then sends a request to azure face api
+  return superagent.post(process.env.URI_BASE)
+    .query({ 
+      returnFaceId: 'true',
+      returnFaceLandmarks: 'false',
+      returnFaceAttributes: 'emotion',
+    })
+    .type('application/json')
+    .set('Ocp-Apim-Subscription-Key', process.env.AZURE_KEY)
+    .send(`{"url": "${imageUrl}"}`)
+    .then((response) => {
+      // emotionData holds an object with the emotion keys on the first response object (the first face, if the image has many faces)
+      const emotionData = response.body[0].faceAttributes.emotion;
+      const getMax = (object) => {
+        return Object.keys(object).filter((x) => {
+          return object[x] === Math.max.apply(null, Object.values(object));
+        });
+      };
+      // this is finding the most significant emotion from the emotion keys in emotionData
+      const spotifySearchTerm = getMax(emotionData);
+      // it should return an array of strings, the first index, beging the single most significant emotion -- 'sadness'
+      return spotifySearchTerm[0];
+    })
+    .catch((err) => {
+      throw err;
     });
-  };
-  const spotifySearchTerm = getMax(emotionData);
-  console.log(spotifySearchTerm[0]);
-});
+};
+// to test this file manually, navigate to this folder in the CLI, update the .env file and call azureUpload(trialUrl)
 
-module.exports.azureUpload = azureUpload;
+export default azureUpload;
