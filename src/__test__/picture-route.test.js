@@ -28,7 +28,7 @@ describe('PICTURE SCHEMA', () => {
           return superagent.post(`${apiURL}/picture`)
             .set('Authorization', `Bearer ${accountSetMock.token}`)
             .field('description', fileDescriptor.picture.name)
-            .attach('picture', fileDescriptor.preview);
+            .attach('picture', fileDescriptor.picture);
         })
         .then((response) => {
           expect(response.statusCode).toEqual(200);
