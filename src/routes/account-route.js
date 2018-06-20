@@ -1,9 +1,7 @@
 'use strict';
 
 import { Router } from 'express';
-// import { json } from 'body-parser';
 import superagent from 'superagent';
-import HttpError from 'http-errors';
 import Account from '../models/account';
 import logger from '../lib/logger';
 
