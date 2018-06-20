@@ -31,11 +31,15 @@ pictureRouter.post('/picture', bearerAuthMiddleware, jsonParser, (request, respo
     })
     .then(() => {
       logger.log(logger.INFO, 'PICTURE ROUTE AZURE', request.body.url);
+      // first upload to AWS
+      // then return new Picture
+      // then upload picture.url to azure
       return azureUpload(request.body.url)
         .then((keyword) => {
           logger.log(logger.INFO, 'AFTER AZURE', keyword);
           request.body.keyword = keyword;
           logger.log(logger.INFO, 'SAVING PITCTURE DATA', request.body);
+          // to reconfigure with AWS would need to first upload picture to AWS, then save the Picture to DB and then use url property from db to call azure
           return new Picture(request.body).save();
         })
         .then((picture) => {
