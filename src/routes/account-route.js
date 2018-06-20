@@ -61,6 +61,7 @@ accountRouter.get('/login', (request, response) => {
                     account.username,
                     account._id,
                   );
+                  return account;
                 })
 
                 .then((account) => {
