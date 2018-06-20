@@ -80,7 +80,8 @@ accountRouter.get('/login', (request, response) => {
                 response.cookie('TOKEN_COOKIE_KEY', token, { maxAge: 900000 });
                 console.log('___COOOOOKIE ______', response.cookie);
                 return response.json({ token });
-              });
+              })
+              .catch(err => new HttpError(400, err));
           })
           .catch(err => new HttpError(400, err));
         response.redirect(process.env.CLIENT_URL);

@@ -10,6 +10,7 @@ describe('PLAYLIST SCHEMA', () => {
   beforeAll(startServer);
   afterEach(removeProfileMock);
   afterAll(stopServer);
+  jest.setTimeout(10000);
 
   describe('POST /profile/playlist', () => {
     test('POST - should return a 200 status and create a playlist', () => {
@@ -19,11 +20,7 @@ describe('PLAYLIST SCHEMA', () => {
           accountMock = accountSetMock;
           console.log('ASM-token', accountSetMock.token);
           return superagent.post(`${apiURL}/profile/playlist`)
-            .set('Authorization', `Bearer ${accountSetMock.token}`)
-            .send({
-              searchTerm: 'sad',
-              account: accountSetMock.account._id,
-            });
+            .set('Authorization', `Bearer ${accountSetMock.token}`);
         })
         .then((response) => {
           expect(response.status).toEqual(200);

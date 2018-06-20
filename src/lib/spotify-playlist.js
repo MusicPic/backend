@@ -5,9 +5,7 @@ require('dotenv').config();
 
 const spotifyUri = 'https://api.spotify.com/v1/search';
 
-const searchTerm = '';
-
-const getPlaylist = () => {
+const getPlaylist = (searchTerm) => {
   return superagent.get(spotifyUri)
     .query({
       q: searchTerm,
@@ -17,17 +15,12 @@ const getPlaylist = () => {
     .type('application/json')
     .set({ Authorization: `Bearer ${process.env.SPOTIFY_OAUTH_TOKEN}` })
     .then((data) => {
-      console.log('DATA', data.body.playlists.items[0].id, data.body.playlists.items[0].name, data.body.playlists.items[0].external_urls.spotify);
-      return (
-        data.body.playlists.items[0].id,
-        data.body.playlists.items[0].name,
-        data.body.playlists.items[0].external_urls.spotify
-      );
+      return data.body.playlists.items[0];
     })
     .catch((err) => {
       console.log('ERR', err);
     });
 };
-getPlaylist();
+// getPlaylist();
 
-module.exports.getPlaylist = getPlaylist;
+export default getPlaylist;

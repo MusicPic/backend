@@ -12,27 +12,39 @@ import getPlaylist from '../lib/spotify-playlist';
 
 const jsonParser = json();
 const playlistRouter = new Router();
-const searchTerm = 'something';
+const searchTerm = 'avatar';
 
 playlistRouter.post('/profile/playlist', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  console.log('________req_______', request.account._id);
   return Profile.findOne({ account: request.account._id })
     .then((profile) => {
-      request.body.profile = profile._id;
-      console.log('REQ-BODY-PROFILE', request.body.profile);
-      console.log('WHOLE PROFILE', profile);
-    })
-    .then(() => {
+    //   request.body.profile = profile._id;
+    //   console.log('REQ-BODY-PROFILE', request.body.profile);
+    //   console.log('WHOLE PROFILE', profile);
+    // })
+    // .then(() => {
       return getPlaylist(searchTerm)
         .then((data) => {
           console.log('PLAYLIST DATA', data);
+          console.log(
+            data.name,
+            data.id,
+            data.external_urls.spotify,
+            profile._id,
+          );
           Playlist.create(
             data.name,
             data.id,
-            data.url,
-            request.body.profile,
-          );
-        });
+            data.external_urls.spotify,
+            profile._id,
+          )
+            .then((playlist) => {
+              console.log('PLAYLISTL;AKSJDFL;ASKDJF', playlist);
+              console.log('____PLAYLIST_ARRAY_____', profile.playlists);
+              profile.playlists.push(playlist);
+              console.log('____PLAYLIST_ARRAY_____', profile.playlists);
+            });
+        })
+        .catch(error => console.log(error));
     }) 
     .then(() => {
       logger.log(logger.INFO, 'POST - responding with a 200 status code.');

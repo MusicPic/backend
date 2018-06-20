@@ -10,7 +10,6 @@ const playlistSchema = mongoose.Schema({
   },
   image: {
     type: String,
-    // required: true,
   },
   playlistId: {
     type: String,
