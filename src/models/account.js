@@ -12,7 +12,7 @@ const TOKEN_SEED_LENGTH = 128;
 const accountSchema = mongoose.Schema({
   username: {
     type: String,
-    required: true,
+    // required: true,
   },
   email: {
     type: String,
@@ -46,6 +46,7 @@ function verifyAccessToken(accessToken) {
     });
 }
 function pCreateToken() {
+  console.log('INSIDE P_CREATE_TOKEN', this);
   this.tokenSeed = crypto.randomBytes(TOKEN_SEED_LENGTH).toString('hex');
   return this.save()
     .then((account) => {

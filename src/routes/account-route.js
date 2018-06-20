@@ -46,29 +46,48 @@ accountRouter.get('/login', (request, response) => {
       })
       .then((openIdResponse) => {
         logger.log(logger.INFO, '__STEP 4__ - request to open id api');
-        console.log(openIdResponse.body);
-
+        console.log('spotify response', openIdResponse.body);
         Account.findOne({ email: openIdResponse.body.email })
-          .then((res) => {
-            if (!res) {
+          .then((resAccount) => {
+            if (!resAccount) {
               logger.log(logger.INFO, 'Creating new account');
-              return Account.create(
+              Account.create(
                 openIdResponse.body.display_name, 
                 openIdResponse.body.email, 
                 openIdResponse.body.id, 
                 accessToken,
-              );
+              )
+                .then((account) => {
+                  return account.pCreateToken();
+                })
+              
+                .then((token) => {
+                  logger.log(logger.INFO, 'Returning newly created account');
+                  console.log('______HEREEEEEE! TOOKEN____', token);
+                  response.cookie('TOKEN_COOKIE_KEY', token, { maxAge: 900000 });
+                  response.redirect(process.env.CLIENT_URL);
+                  // return response.json({ token });
+                })
+                // .catch(err => new HttpError(400, err));
             }
-            
-            logger.log(logger.INFO, 'Returning existing account');
-            res.accessToken = accessToken;
-            res.save();
-            return res;
+            logger.log(logger.INFO, 'old account block');
+            resAccount.accessToken = accessToken;
+            resAccount.save()
+              .then((account) => {
+                console.log('ACCOUNT????', account);
+                return account.pCreateToken();
+              })
+              .then((token) => {
+                console.log('___TOKEN______', token);
+                response.cookie('TOKEN_COOKIE_KEY', token, { maxAge: 500 });
+                console.log('___COOOOOKIE ______', token);
+                response.redirect(process.env.CLIENT_URL);
+                // return response.json({ token });
+              })
+              .catch(err => new HttpError(400, err));
           })
           .catch(err => new HttpError(400, err));
-
-        response.cookie('token', 'bleh');
-        response.redirect(process.env.CLIENT_URL);
+        // response.redirect(process.env.CLIENT_URL);
       })
       .catch((error) => {
         logger.log(logger.INFO, error);
