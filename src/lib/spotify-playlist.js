@@ -1,6 +1,8 @@
 'use strict';
 
-const superagent = require('superagent');
+import superagent from 'superagent';
+import logger from './logger';
+
 require('dotenv').config();
 
 const spotifyUri = 'https://api.spotify.com/v1/search';
@@ -18,9 +20,8 @@ const getPlaylist = (searchTerm) => {
       return data.body.playlists.items[0];
     })
     .catch((err) => {
-      console.log('ERR', err);
+      logger.log(logger.ERROR, `ERR, ${err}`);
     });
 };
-// getPlaylist();
 
 export default getPlaylist;

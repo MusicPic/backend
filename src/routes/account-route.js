@@ -62,7 +62,6 @@ accountRouter.get('/login', (request, response) => {
                   logger.log(logger.INFO, 'Returning newly created account');
                   response.cookie('TOKEN_COOKIE_KEY', token, { maxAge: 90000 });
                   response.redirect(process.env.CLIENT_URL);
-                  // return response.json({ token });
                 })
                 .catch(() => {
                   response.redirect(process.env.CLIENT_URL);
@@ -79,7 +78,6 @@ accountRouter.get('/login', (request, response) => {
               .then((token) => {
                 response.cookie('TOKEN_COOKIE_KEY', token, { maxAge: 90000 });
                 response.redirect(process.env.CLIENT_URL);
-                // return response.json({ token });
               })
               .catch(() => {
                 response.redirect(process.env.CLIENT_URL);

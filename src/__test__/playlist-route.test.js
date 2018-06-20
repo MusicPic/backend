@@ -1,6 +1,7 @@
 'use strict';
 
 import superagent from 'superagent';
+import logger from '../lib/logger';
 import { startServer, stopServer } from '../lib/server';
 import { removeProfileMock, createProfileMock } from './lib/profile-mock';
 
@@ -18,7 +19,7 @@ describe('PLAYLIST SCHEMA', () => {
       return createProfileMock()
         .then((accountSetMock) => {
           accountMock = accountSetMock;
-          console.log('ASM-token', accountSetMock.token);
+          logger.log(logger.INFO, `ASM-token, ${accountSetMock.token}`);
           return superagent.post(`${apiURL}/profile/playlist`)
             .set('Authorization', `Bearer ${accountSetMock.token}`);
         })

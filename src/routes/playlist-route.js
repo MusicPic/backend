@@ -17,20 +17,9 @@ const searchTerm = 'avatar';
 playlistRouter.post('/profile/playlist', bearerAuthMiddleware, jsonParser, (request, response, next) => {
   return Profile.findOne({ account: request.account._id })
     .then((profile) => {
-    //   request.body.profile = profile._id;
-    //   console.log('REQ-BODY-PROFILE', request.body.profile);
-    //   console.log('WHOLE PROFILE', profile);
-    // })
-    // .then(() => {
       return getPlaylist(searchTerm)
         .then((data) => {
-          console.log('PLAYLIST DATA', data);
-          console.log(
-            data.name,
-            data.id,
-            data.external_urls.spotify,
-            profile._id,
-          );
+          logger.log(logger.INFO, `PLAYLIST DATA, ${data}`);
           Playlist.create(
             data.name,
             data.id,
@@ -38,13 +27,10 @@ playlistRouter.post('/profile/playlist', bearerAuthMiddleware, jsonParser, (requ
             profile._id,
           )
             .then((playlist) => {
-              console.log('PLAYLISTL;AKSJDFL;ASKDJF', playlist);
-              console.log('____PLAYLIST_ARRAY_____', profile.playlists);
               profile.playlists.push(playlist);
-              console.log('____PLAYLIST_ARRAY_____', profile.playlists);
             });
         })
-        .catch(error => console.log(error));
+        .catch(error => logger.log(logger.ERROR, `${error}`));
     }) 
     .then(() => {
       logger.log(logger.INFO, 'POST - responding with a 200 status code.');
