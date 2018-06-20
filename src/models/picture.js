@@ -3,9 +3,10 @@
 import mongoose from 'mongoose';
 
 const pictureSchema = mongoose.Schema({
-  keywords: [{ 
-    keyword: String,
-  }],
+  keyword: {
+    type: String,
+    required: true,
+  },
   url: { 
     type: String,
     required: true,
@@ -21,5 +22,12 @@ const pictureSchema = mongoose.Schema({
 });
 
 const Picture = mongoose.model('picture', pictureSchema);
+
+Picture.create = (keyword, url) => {
+  return new Picture({
+    keyword,
+    url,
+  }).save();
+};
 
 export default Picture;

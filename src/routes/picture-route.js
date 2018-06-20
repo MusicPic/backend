@@ -28,15 +28,12 @@ pictureRouter.post('/picture', bearerAuthMiddleware, jsonParser, (request, respo
       request.body.keyword = keyword;
       logger.log(logger.INFO, 'SAVING PITCTURE DATA', request.body.keyword);
       // to reconfigure with AWS would need to first upload picture to AWS, then save the Picture to DB and then use url property from db to call azure
-      return new Picture(request.body).save();
-    })
-    .then((picture) => {
-      logger.log(logger.INFO, 'PICTURE SAVED', picture);
-      return picture;
+      return Picture.create(request.body.keyword, request.body.url);
     })
     .then(() => {
       logger.log(logger.INFO, 'PICTURE RETURNING', request.body);
-      return request.body.keyword;
+      // request.body contains, keyword and url properties
+      return request.body;
     })
     .catch(next);
 });
