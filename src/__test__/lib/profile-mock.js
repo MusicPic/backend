@@ -7,10 +7,11 @@ import { createAccountMock, removeAccountMock } from './account-mock';
 const createProfileMock = () => {
   let resultMock = {};
 
+  // this function returns an object with account, profile and token properties
   return createAccountMock()
     .then((accountSetMock) => {
       resultMock = accountSetMock;
-      // console.log(resultMock.accountSetMock.account._id);
+      console.log('ACCOUNT ID in MOCK', resultMock.account._id);
 
       return new Profile({
         username: faker.name.firstName(),
@@ -20,7 +21,7 @@ const createProfileMock = () => {
     })
     .then((profile) => {
       resultMock.profile = profile;
-      // console.log(resultMock);
+      console.log('PROFILE MOCK RETURNS:', resultMock);
       return resultMock;
     });
 };

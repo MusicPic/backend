@@ -10,6 +10,3 @@ process.env.PORT = 7000;
 process.env.TOKEN_SECRET = 'ASDLFJ328947hdsfj328y84yuqhwef237r34h78364yuhjfa$';
 process.env.SPOTIFY_OAUTH_TOKEN = 'BQA4JNU7P5HpdQDI4opj91z34cHLYe7MevHwr7NnQq48xIQShFdwKGIxb66mE81NISzRdknOxnF3h6Qp5KH4YfiQXobFr5mI5bjGl6mFZEbHKOJLk9OlDoiG963uqIZdLz7NKaaPPjegd9OePAavZ5iubb22TVUctek7FAVwxJcd4bEjkKEOsqSP3VATdIuZeJ46glFQKoy51aHiMhN2r-tai9bwD-nmPlMLTzLFKYXrDNdVM42zv-vZqao8r69NB8weiBBmLA';
 require('dotenv').config();
-
-
-// hey you
