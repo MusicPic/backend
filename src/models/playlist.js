@@ -10,11 +10,13 @@ const playlistSchema = mongoose.Schema({
   },
   image: {
     type: String,
-    required: true,
   },
   playlistId: {
     type: String,
     required: true,
+  },
+  playlistUrl: {
+    type: String,
   },
   profile: {
     type: mongoose.Schema.Types.ObjectId,
@@ -52,4 +54,15 @@ const playlistPostHook = (document, done) => {
 playlistSchema.pre('save', playlistPreHook);
 playlistSchema.post('remove', playlistPostHook);
 
-export default mongoose.model('playlist', playlistSchema);
+const Playlist = mongoose.model('playlist', playlistSchema);
+
+Playlist.create = (playlistName, playlistId, playlistUrl, profile) => {
+  return new Playlist({
+    playlistName,
+    playlistId,
+    playlistUrl,
+    profile,
+  }).save();
+};
+
+export default Playlist;

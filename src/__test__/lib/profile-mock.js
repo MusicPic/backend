@@ -1,16 +1,18 @@
 'use strict';
 
 import faker from 'faker';
+import logger from '../../lib/logger';
 import Profile from '../../models/profile';
 import { createAccountMock, removeAccountMock } from './account-mock';
 
 const createProfileMock = () => {
   let resultMock = {};
+
   // this function returns an object with account, profile and token properties
   return createAccountMock()
     .then((accountSetMock) => {
       resultMock = accountSetMock;
-      console.log('ACCOUNT ID in MOCK', resultMock.account._id);
+      logger.log(logger.INFO, `ACCOUNT ID in MOCK, ${resultMock.account._id}`);
 
       return new Profile({
         username: faker.name.firstName(),
@@ -20,7 +22,7 @@ const createProfileMock = () => {
     })
     .then((profile) => {
       resultMock.profile = profile;
-      console.log('PROFILE MOCK RETURNS:', resultMock);
+      logger.log(logger.INFO, `PROFILE MOCK RETURS:${resultMock}`);
       return resultMock;
     });
 };

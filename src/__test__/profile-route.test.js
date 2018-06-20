@@ -1,11 +1,10 @@
 'use strict';
 
 import superagent from 'superagent';
-// import faker from 'faker';
+import logger from '../lib/logger';
 import { startServer, stopServer } from '../lib/server';
 import { createAccountMock } from './lib/account-mock';
 import { removeProfileMock, createProfileMock } from './lib/profile-mock';
-// import { createPlantMock, removePlantMock } from './lib/plant-mock';
 
 const apiURL = `http://localhost:${process.env.PORT}`;
 
@@ -20,7 +19,7 @@ describe('PROFILE SCHEMA', () => {
       return createAccountMock()
         .then((accountSetMock) => {
           accountMock = accountSetMock;
-          console.log('test');
+          logger.log(logger.INFO, 'test');
           return superagent.post(`${apiURL}/profile`)
             .set('Authorization', `Bearer ${accountSetMock.token}`)
             .send({
