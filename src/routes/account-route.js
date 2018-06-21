@@ -4,6 +4,7 @@ import { Router } from 'express';
 import superagent from 'superagent';
 import Account from '../models/account';
 import logger from '../lib/logger';
+import Profile from '../models/profile';
 
 const SPOTIFY_OAUTH_URL = 'https://accounts.spotify.com/api/token';
 const OPEN_ID_URL = 'https://api.spotify.com/v1/me';
@@ -16,7 +17,7 @@ accountRouter.get('/login', (request, response) => {
   let accessToken;
 
   if (!request.query.code) {
-    // response.redirect(process.env.CLIENT_URL);
+    response.redirect(process.env.CLIENT_URL);
   } else {
     logger.log(logger.INFO, '__CODE__', request.query.code);
     logger.log(logger.INFO, '__STEP 3.2__ - sending code back');
@@ -49,6 +50,7 @@ accountRouter.get('/login', (request, response) => {
           .then((resAccount) => {
             if (!resAccount) {
               logger.log(logger.INFO, 'Creating new account');
+
               return Account.create(
                 openIdResponse.body.display_name, 
                 openIdResponse.body.email, 
@@ -56,19 +58,28 @@ accountRouter.get('/login', (request, response) => {
                 accessToken,
               )
                 .then((account) => {
+                  Profile.create(
+                    account.username,
+                    account._id,
+                  );
+                  return account;
+                })
+
+                .then((account) => {
                   return account.pCreateToken();
                 })
                 .then((token) => {
                   logger.log(logger.INFO, 'Returning newly created account');
                   response.cookie('TOKEN_COOKIE_KEY', token, { maxAge: 900000 });
-                  response.redirect(process.env.CLIENT_URL);
+                  response.redirect(`${process.env.CLIENT_URL}/dashboard`);
+
                 })
                 .catch(() => {
                   response.redirect(process.env.CLIENT_URL);
                 });
             }
 
-            logger.log(logger.INFO, 'old account block');
+            logger.log(logger.INFO, 'Returning existing account');
             resAccount.accessToken = accessToken;
 
             return resAccount.save()
@@ -77,7 +88,7 @@ accountRouter.get('/login', (request, response) => {
               })
               .then((token) => {
                 response.cookie('TOKEN_COOKIE_KEY', token, { maxAge: 900000 });
-                response.redirect(process.env.CLIENT_URL);
+                response.redirect(`${process.env.CLIENT_URL}/dashboard`);
               })
               .catch(() => {
                 response.redirect(process.env.CLIENT_URL);
@@ -89,7 +100,7 @@ accountRouter.get('/login', (request, response) => {
       })
       .catch((error) => {
         logger.log(logger.INFO, error);
-        response.redirect(`${process.env.CLIENT_URL}?error=oauth`);
+        response.redirect(process.env.CLIENT_URL);
       });
   }
   return null;

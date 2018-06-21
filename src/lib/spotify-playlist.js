@@ -12,12 +12,16 @@ const getPlaylist = (searchTerm) => {
     .query({
       q: searchTerm,
       type: 'playlist',
-      limit: 1,
+      limit: 10,
     })
     .type('application/json')
     .set({ Authorization: `Bearer ${process.env.SPOTIFY_OAUTH_TOKEN}` })
     .then((data) => {
-      return data.body.playlists.items[0];
+      const playlistArray = data.body.playlists.items;
+      const randomPlaylist = playlistArray[Math.floor(Math.random() * playlistArray.length)];
+      // console.log(playlistArray);
+      console.log(randomPlaylist);
+      return randomPlaylist;
     })
     .catch((err) => {
       logger.log(logger.ERROR, `ERR, ${err}`);

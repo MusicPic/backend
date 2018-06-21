@@ -13,7 +13,6 @@ import pictureRouter from '../routes/picture-route';
 const app = express();
 let server = null;
 
-// routes will be app.use'd here
 app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 app.use(accountRouter);
 app.use(profileRouter);
