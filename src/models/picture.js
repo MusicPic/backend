@@ -23,10 +23,11 @@ const pictureSchema = mongoose.Schema({
 
 const Picture = mongoose.model('picture', pictureSchema);
 
-Picture.create = (keyword, url) => {
+Picture.create = (keyword, url, profile) => {
   return new Picture({
     keyword,
     url,
+    profile,
   }).save();
 };
 
