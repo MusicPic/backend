@@ -25,6 +25,7 @@ playlistRouter.post('/profile/playlist', bearerAuthMiddleware, jsonParser, (requ
             profile._id,
           )
             .then((playlist) => {
+              console.log(playlist);
               profile.playlists.push(playlist);
               return profile;
             });
