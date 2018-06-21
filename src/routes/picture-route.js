@@ -31,9 +31,9 @@ pictureRouter.post('/picture', bearerAuthMiddleware, jsonParser, (request, respo
       return Picture.create(request.body.keyword, request.body.url);
     })
     .then(() => {
-      logger.log(logger.INFO, 'PICTURE RETURNING', request.body);
+      logger.log(logger.INFO, 'PICTURE RETURNING', request);
       // request.body contains, keyword and url properties
-      return request.body;
+      return request;
     })
     .catch(next);
 });
