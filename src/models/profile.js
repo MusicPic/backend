@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 const profileSchema = mongoose.Schema({
   username: {
     type: String,
-    required: true,
+    // required: true,
     unique: true,
   },
   avatar: {

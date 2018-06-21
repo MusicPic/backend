@@ -32,23 +32,24 @@ profileRouter.post('/profile', bearerAuthMiddleware, jsonParser, (request, respo
 profileRouter.get('/profile/me', bearerAuthMiddleware, (request, response, next) => {
   return Profile.findOne({ account: request.account._id })
     .then((profile) => {
+      console.log(profile);
       logger.log(logger.INFO, 'GET - responding with a 200 status code');
       return response.json(profile);
     })
     .catch(next);
 });
 
-profileRouter.get('/profile/:id', bearerAuthMiddleware, (request, response, next) => {
-  logger.log(logger.INFO, 'Processing a GET on /profile/:id');
-  logger.log(logger.INFO, request.params.id);
+// profileRouter.get('/profile/:id', bearerAuthMiddleware, (request, response, next) => {
+//   logger.log(logger.INFO, 'Processing a GET on /profile/:id');
+//   logger.log(logger.INFO, request.params.id);
 
-  return Profile.findById(request.params.id)
-    .then((profile) => {
-      logger.log(logger.INFO, 'GET - responding with a 200 status code');
-      return response.json(profile);
-    })
-    .catch(next);
-});
+//   return Profile.findById(request.params.id)
+//     .then((profile) => {
+//       logger.log(logger.INFO, 'GET - responding with a 200 status code');
+//       return response.json(profile);
+//     })
+//     .catch(next);
+// });
 
 profileRouter.put('/profile/:id', bearerAuthMiddleware, jsonParser, (request, response, next) => {
   logger.log(logger.INFO, 'Processing a PUT on /profile/:id');

@@ -107,7 +107,26 @@ describe('PROFILE SCHEMA', () => {
   });
 
   describe('GET /profile', () => { 
-    test('GET - should return a 200 status code and the newly created profile.', () => {
+    test('GET - should return a 200 status code and profile', () => {
+      let profileMock = null;
+
+      return createProfileMock()
+        .then((profileSetMock) => {
+          profileMock = profileSetMock;
+
+          return superagent.get(`${apiURL}/profile/me`)
+            .set('Authorization', `Bearer ${profileMock.token}`)
+            .then((response) => {
+              expect(response.status).toEqual(200);
+              expect(response.body.profile.username).toEqual(profileMock.profile.username);
+              expect(response.body.profile.avatar).toEqual(profileMock.profile.avatar);
+              expect(response.body.profile.account).toEqual(profileMock.profile.account.toString());
+            });
+        });
+    });
+
+
+    test('GET - should return a 400 for no token being passed.', () => {
       let profileMock = null;
 
       return createProfileMock()
@@ -115,61 +134,43 @@ describe('PROFILE SCHEMA', () => {
           profileMock = profileSetMock;
 
           return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
-            .set('Authorization', `Bearer ${profileMock.token}`)
-            .then((response) => {
-              expect(response.status).toEqual(200);
-              expect(response.body.username).toEqual(profileMock.profile.username);
-              expect(response.body.avatar).toEqual(profileMock.profile.avatar);
-              expect(response.body.account).toEqual(profileMock.profile.account.toString());
+            .catch((error) => {
+              expect(error.status).toEqual(400);
             });
         });
     });
-  });
 
-  test('GET - should return a 400 for no token being passed.', () => {
-    let profileMock = null;
+    test('GET - should return a 401 for an invalid token.', () => {
+      let profileMock = null;
 
-    return createProfileMock()
-      .then((profileSetMock) => {
-        profileMock = profileSetMock;
+      return createProfileMock()
+        .then((profileSetMock) => {
+          profileMock = profileSetMock;
 
-        return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
-          .catch((error) => {
-            expect(error.status).toEqual(400);
-          });
-      });
-  });
+          return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
+            .set('Authorization', 'Bearer 1234')
+            .then(Promise.reject)
+            .catch((error) => {
+              expect(error.status).toEqual(401);
+            });
+        });
+    });
 
-  test('GET - should return a 401 for an invalid token.', () => {
-    let profileMock = null;
+    test('GET - should return a 404 for an invalid id', () => {
+      let profileMock = null;
 
-    return createProfileMock()
-      .then((profileSetMock) => {
-        profileMock = profileSetMock;
+      return createProfileMock()
+        .then((setProfleMock) => {
+          profileMock = setProfleMock;
 
-        return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
-          .set('Authorization', 'Bearer 1234')
-          .then(Promise.reject)
-          .catch((error) => {
-            expect(error.status).toEqual(401);
-          });
-      });
-  });
-
-  test('GET - should return a 404 for an invalid id', () => {
-    let profileMock = null;
-
-    return createProfileMock()
-      .then((setProfleMock) => {
-        profileMock = setProfleMock;
-
-        return superagent.get(`${apiURL}/profile/badID`)
-          .set('Authorization', `Bearer ${profileMock.token}`)
-          .then(Promise.reject)
-          .catch((error) => {
-            expect(error.status).toEqual(404);
-          });
-      });
+          return superagent.get(`${apiURL}/profile/badID`)
+            .set('Authorization', `Bearer ${profileMock.token}`)
+            .then(Promise.reject)
+            .catch((error) => {
+              expect(error.status).toEqual(404);
+            });
+        });
+    });
   });
 
 
