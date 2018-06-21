@@ -61,6 +61,7 @@ accountRouter.get('/login', (request, response) => {
                   Profile.create(
                     account.username,
                     account._id,
+                    account.accessToken,
                   );
                   return account;
                 })
@@ -81,7 +82,16 @@ accountRouter.get('/login', (request, response) => {
             logger.log(logger.INFO, 'Returning existing account');
             resAccount.accessToken = accessToken;
 
+            Profile.findOne({ account: resAccount._id })
+              .then((profile) => {
+                profile.accessToken = accessToken;
+                return profile.save();
+              });
+
             return resAccount.save()
+              .then((account) => {
+                return account;
+              })
               .then((account) => {
                 return account.pCreateToken();
               })
