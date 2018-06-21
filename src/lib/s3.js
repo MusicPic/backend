@@ -9,7 +9,6 @@ import fs from 'fs-extra';
 
 const s3Upload = (path, key) => {
   console.log('in s3 upload:', `PATH: ${path} and KEY: ${key}`);
-  console.log('AWS UPLOADING: ', fs.createReadStream(path));
   const AWS = require('aws-sdk'); 
   const amazonS3 = new AWS.S3(); 
   const uploadOptions = {
@@ -18,7 +17,7 @@ const s3Upload = (path, key) => {
     ACL: 'public-read',
     Body: fs.createReadStream(path),
   };
-
+  console.log('AWS OPTIONS BODY: ', uploadOptions);
   return amazonS3.upload(uploadOptions)
     .promise()
     .then((response) => {

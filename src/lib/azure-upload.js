@@ -35,7 +35,7 @@ const azureUpload = (image) => {
       return spotifySearchTerm[0];
     })
     .catch((err) => {
-      console.log(err.text);
+      console.log('AZURE ERR', err.text);
       throw err;
     });
 };

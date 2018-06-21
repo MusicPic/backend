@@ -17,18 +17,20 @@ const multerUpload = multer({ dest: `${__dirname}/../temp` });
 const pictureRouter = new Router();
 // multer attaches a files propert to the request object, multerUpload.single(feildname)- feildname being a string, i think is what we want
 
-pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePicture'), jsonParser, (request, response, next) => {
-  console.log('REQUEST FILE', request.file);
-  console.log('REQUEST FILE PATH', request.file.path);
-  if (!request.account) {
-    return next(new HttpError(404, 'ASSET ROUTER ERROR: asset not found, no account! '));
-  }
-  if (!request.file) {
-    return next(new HttpError(400, 'ASSET ROUTER ERROR: invalid request'));
-  }
-  const key = `${request.file.filename}.${request.file.originalname}`;
+pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.any(), jsonParser, (request, response, next) => {
+  console.log('REQUEST FILES', request.files);
+  console.log('REQUEST BUFFER', request.files[1]);
+  console.log('REQUEST PICTURE PATH', request.files[0].path);
+  // if (!request.account) {
+  //   return next(new HttpError(404, 'ASSET ROUTER ERROR: asset not found, no account! '));
+  // }
+  // if (!request.files) {
+  //   return next(new HttpError(400, 'ASSET ROUTER ERROR: invalid request'));
+  // }
+  const picture = request.files[0];
+  const key = `${picture.filename}.${picture.originalname}`;
   // const options = { runValidators: true, new: true };
-  return s3Upload(request.file.path, key)
+  return s3Upload(picture.path, key)
     .then((url) => {
       console.log('URL AFTER AWS', url);
       return azureUpload(url)
