@@ -22,6 +22,7 @@ describe('PLAYLIST SCHEMA', () => {
             .set('Authorization', `Bearer ${accountMock.token}`);
         })
         .then((response) => {
+          console.log(response.body);
           expect(response.status).toEqual(200);
           expect(response.body.profile._id).toEqual(accountMock.profile._id.toString());
           expect(response.body.profile.username).toEqual(accountMock.profile.username);

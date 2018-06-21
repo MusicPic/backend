@@ -72,7 +72,6 @@ accountRouter.get('/login', (request, response) => {
                   logger.log(logger.INFO, 'Returning newly created account');
                   response.cookie('TOKEN_COOKIE_KEY', token, { maxAge: 900000 });
                   response.redirect(`${process.env.CLIENT_URL}/dashboard`);
-
                 })
                 .catch(() => {
                   response.redirect(process.env.CLIENT_URL);

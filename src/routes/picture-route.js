@@ -9,6 +9,7 @@ import azureUpload from '../lib/azure-upload';
 import Picture from '../models/picture';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
 import logger from '../lib/logger';
+import getPlaylist from '../lib/spotify-playlist';
 // import Profile from '../models/profile';
 
 
@@ -45,10 +46,10 @@ pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePic
         .then((newPicture) => {
           logger.log(logger.INFO, 'MONGO PICTURE', newPicture);
           return response.json(newPicture);
-        });
+        })
+
     })
     .catch(next);
-
 });
 
 export default pictureRouter;

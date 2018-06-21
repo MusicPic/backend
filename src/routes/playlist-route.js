@@ -16,7 +16,7 @@ const searchTerm = 'joanna';
 playlistRouter.post('/profile/playlist', bearerAuthMiddleware, jsonParser, (request, response, next) => {
   return Profile.findOne({ account: request.account._id })
     .then((profile) => {
-      return getPlaylist(searchTerm)
+      return getPlaylist(searchTerm, process.env.SPOTIFY_OAUTH_TOKEN)
         .then((data) => {
           return Playlist.create(
             data.name,

@@ -48,4 +48,4 @@ const azureUpload = (image) => {
 
 export default azureUpload;
 // if application.json
-//.send(`{"url": "${imageUrl}"}`)
+// .send(`{"url": "${imageUrl}"}`)
