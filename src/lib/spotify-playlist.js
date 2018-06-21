@@ -12,12 +12,16 @@ const getPlaylist = (searchTerm) => {
     .query({
       q: searchTerm,
       type: 'playlist',
-      limit: 1,
+      limit: 10,
     })
     .type('application/json')
-    .set({ Authorization: 'Bearer BQDrfW7_Ssv6sB_r0tAW0mhh9W_4VXI9gPtmXrpendo8KU3APNgrQaWA0HkGyCxTIOV7hKLt7v_WjXMwCps5OyBjnsbq-D25nvhIPL80YjtZMyY8CWQdp-WEKcnGahlPR1Q3iEkjwf4qLKPaU1nH9u6DkP0h4t9J-k1xKzpQGfFuitKTiXcnfl2D39achmzh7g1_efU' })
+    .set({ Authorization: `Bearer ${process.env.SPOTIFY_OAUTH_TOKEN}` })
     .then((data) => {
-      return data.body.playlists.items[0];
+      const playlistArray = data.body.playlists.items;
+      const randomPlaylist = playlistArray[Math.floor(Math.random() * playlistArray.length)];
+      // console.log(playlistArray);
+      console.log(randomPlaylist);
+      return randomPlaylist;
     })
     .catch((err) => {
       logger.log(logger.ERROR, `ERR, ${err}`);
