@@ -20,6 +20,7 @@ const pictureRouter = new Router();
 pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePicture'), jsonParser, (request, response, next) => {
   console.log('REQUEST FILE', request.file);
   console.log('REQUEST PICTURE PATH', request.file.path);
+  console.log('ACCOUNT INFO', request.account._id);
   // if (!request.account) {
   //   return next(new HttpError(404, 'ASSET ROUTER ERROR: asset not found, no account! '));
   // }
@@ -32,20 +33,21 @@ pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePic
   return s3Upload(picture.path, key)
     .then((url) => {
       console.log('URL AFTER AWS', url);
-      request.body.url = url;
-      logger.log(logger.INFO, 'SAVING URL', request.body.url);
+      // response.body.url = url;
+      // logger.log(logger.INFO, 'SAVING URL', response.body.url);
       return azureUpload(url)
         .then((keyword) => {
           logger.log(logger.INFO, 'KEYWORD AFTER AZURE', keyword);
-          request.body.keyword = keyword;
-          logger.log(logger.INFO, 'SAVING PITCTURE DATA', request.body.keyword);
+          // response.body.keyword = keyword;
+          // logger.log(logger.INFO, 'SAVING PITCTURE DATA', response.body.keyword);
           // to reconfigure with AWS would need to first upload picture to AWS, then save the Picture to DB and then use url property from db to call azure
-          return Picture.create(request.body.keyword, request.body.url);
+          return Picture.create(keyword, url);
         })
-        .then(() => {
-          logger.log(logger.INFO, 'PICTURE RETURNING', request.body);
+        .then((newPicture) => {
+          // logger.log(logger.INFO, 'PICTURE RETURNING', response.body);
+          logger.log(logger.INFO, 'MONGO PICTURE', newPicture);
           // request.body contains, keyword and url properties
-          return request.body;
+          return response.json(newPicture);
         })
         .catch(next);
     });
