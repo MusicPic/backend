@@ -11,9 +11,12 @@ const profileSchema = mongoose.Schema({
   avatar: {
     type: String,
   },
-  picture: [{
-    type: String,
-  }],
+  pictures: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'picture',
+    },
+  ],
   playlists: [
     {
       type: mongoose.Schema.Types.ObjectId,

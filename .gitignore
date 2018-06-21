@@ -1,5 +1,6 @@
 .idea/
 db/
+temp/
 .vscode
 src/__test__/lib/test.env.js
 build/__test__/lib/test.env.js
