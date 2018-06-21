@@ -32,7 +32,6 @@ profileRouter.post('/profile', bearerAuthMiddleware, jsonParser, (request, respo
 profileRouter.get('/profile/me', bearerAuthMiddleware, (request, response, next) => {
   return Profile.findOne({ account: request.account._id })
     .then((profile) => {
-      console.log(profile);
       logger.log(logger.INFO, 'GET - responding with a 200 status code');
       return response.json(profile);
     })

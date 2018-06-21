@@ -1,7 +1,6 @@
 'use strict';
 
 import superagent from 'superagent';
-import logger from '../lib/logger';
 import { startServer, stopServer } from '../lib/server';
 import { removeProfileMock, createProfileMock } from './lib/profile-mock';
 
@@ -23,8 +22,6 @@ describe('PLAYLIST SCHEMA', () => {
             .set('Authorization', `Bearer ${accountMock.token}`);
         })
         .then((response) => {
-          logger.log(logger.INFO, `ASM-----------, ${(accountMock.profile)}`);
-          console.log('test response_______', response.body.profile);
           expect(response.status).toEqual(200);
           expect(response.body.profile._id).toEqual(accountMock.profile._id.toString());
           expect(response.body.profile.username).toEqual(accountMock.profile.username);
