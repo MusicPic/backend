@@ -1,7 +1,6 @@
 'use strict';
 
 import superagent from 'superagent';
-import logger from '../lib/logger';
 import { startServer, stopServer } from '../lib/server';
 import { createAccountMock } from './lib/account-mock';
 import { removeProfileMock, createProfileMock } from './lib/profile-mock';
@@ -19,7 +18,6 @@ describe('PROFILE SCHEMA', () => {
       return createAccountMock()
         .then((accountSetMock) => {
           accountMock = accountSetMock;
-          logger.log(logger.INFO, 'test');
           return superagent.post(`${apiURL}/profile`)
             .set('Authorization', `Bearer ${accountSetMock.token}`)
             .send({
@@ -118,22 +116,18 @@ describe('PROFILE SCHEMA', () => {
             .set('Authorization', `Bearer ${profileMock.token}`)
             .then((response) => {
               expect(response.status).toEqual(200);
-              expect(response.body.profile.username).toEqual(profileMock.profile.username);
-              expect(response.body.profile.avatar).toEqual(profileMock.profile.avatar);
-              expect(response.body.profile.account).toEqual(profileMock.profile.account.toString());
+              expect(response.body.username).toEqual(profileMock.profile.username);
+              expect(response.body.avatar).toEqual(profileMock.profile.avatar);
+              expect(response.body.account).toEqual(profileMock.profile.account.toString());
             });
         });
     });
 
 
     test('GET - should return a 400 for no token being passed.', () => {
-      let profileMock = null;
-
       return createProfileMock()
-        .then((profileSetMock) => {
-          profileMock = profileSetMock;
-
-          return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
+        .then(() => {
+          return superagent.get(`${apiURL}/profile/me`)
             .catch((error) => {
               expect(error.status).toEqual(400);
             });
@@ -141,13 +135,9 @@ describe('PROFILE SCHEMA', () => {
     });
 
     test('GET - should return a 401 for an invalid token.', () => {
-      let profileMock = null;
-
       return createProfileMock()
-        .then((profileSetMock) => {
-          profileMock = profileSetMock;
-
-          return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
+        .then(() => {
+          return superagent.get(`${apiURL}/profile/me`)
             .set('Authorization', 'Bearer 1234')
             .then(Promise.reject)
             .catch((error) => {

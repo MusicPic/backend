@@ -17,7 +17,7 @@ accountRouter.get('/login', (request, response) => {
   let accessToken;
 
   if (!request.query.code) {
-    // response.redirect(process.env.CLIENT_URL);
+    response.redirect(process.env.CLIENT_URL);
   } else {
     logger.log(logger.INFO, '__CODE__', request.query.code);
     logger.log(logger.INFO, '__STEP 3.2__ - sending code back');
@@ -50,6 +50,7 @@ accountRouter.get('/login', (request, response) => {
           .then((resAccount) => {
             if (!resAccount) {
               logger.log(logger.INFO, 'Creating new account');
+
               return Account.create(
                 openIdResponse.body.display_name, 
                 openIdResponse.body.email, 
@@ -77,7 +78,7 @@ accountRouter.get('/login', (request, response) => {
                 });
             }
 
-            logger.log(logger.INFO, 'old account block');
+            logger.log(logger.INFO, 'Returning existing account');
             resAccount.accessToken = accessToken;
 
             return resAccount.save()
