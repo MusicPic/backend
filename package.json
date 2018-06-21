@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/MusicPic/backend#readme",
   "devDependencies": {
+    "aws-sdk-mock": "^3.1.0",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.3",
     "babel-preset-env": "^1.7.0",
@@ -45,6 +46,7 @@
     "winston": "^3.0.0"
   },
   "dependencies": {
+    "aws-sdk": "^2.260.1",
     "babel-jest": "^23.0.1",
     "bcrypt": "^2.0.1",
     "dotenv": "^6.0.0",
