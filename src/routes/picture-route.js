@@ -43,9 +43,9 @@ pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePic
           return Picture.create(request.body.keyword, request.body.url);
         })
         .then(() => {
-          logger.log(logger.INFO, 'PICTURE RETURNING', request);
+          logger.log(logger.INFO, 'PICTURE RETURNING', request.body);
           // request.body contains, keyword and url properties
-          return request;
+          return request.body;
         })
         .catch(next);
     });
