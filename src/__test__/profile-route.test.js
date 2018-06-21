@@ -23,6 +23,7 @@ describe('PROFILE SCHEMA', () => {
             .send({
               username: 'test',
               account: accountSetMock.account._id,
+
             });
         })
         .then((response) => {

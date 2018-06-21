@@ -23,6 +23,9 @@ const profileSchema = mongoose.Schema({
       ref: 'playlist',
     },
   ],
+  accessToken: { 
+    type: String,
+  },
   account: {
     type: mongoose.Schema.ObjectId,
     required: true,
@@ -32,9 +35,9 @@ const profileSchema = mongoose.Schema({
 
 const Profile = mongoose.model('profile', profileSchema);
 
-Profile.create = (username, account) => {
+Profile.create = (username, account, accessToken) => {
   return new Profile({
-    username, account,
+    username, account, accessToken,
   }).save();
 };
 
