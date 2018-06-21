@@ -32,6 +32,8 @@ pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePic
   return s3Upload(picture.path, key)
     .then((url) => {
       console.log('URL AFTER AWS', url);
+      request.body.url = url;
+      logger.log(logger.INFO, 'SAVING URL', request.body.url);
       return azureUpload(url)
         .then((keyword) => {
           logger.log(logger.INFO, 'KEYWORD AFTER AZURE', keyword);

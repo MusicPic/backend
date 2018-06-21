@@ -17,7 +17,7 @@ const azureUpload = (image) => {
     })
     .type('application/json')
     .set('Ocp-Apim-Subscription-Key', process.env.AZURE_KEY)
-    .send(image)
+    .send(`{"url": "${image}"}`)
     .then((response) => {
       // emotionData holds an object with the emotion keys on the first response object 
       // (the first face, if the image has many faces)
