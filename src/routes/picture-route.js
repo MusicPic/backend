@@ -5,7 +5,7 @@ import { json } from 'body-parser';
 import multer from 'multer';
 import superagent from 'superagent';
 import HttpError from 'http-errors';
-import { s3Upload } from '../lib/s3';
+import s3Upload from '../lib/s3';
 import azureUpload from '../lib/azure-upload';
 import Picture from '../models/picture';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
