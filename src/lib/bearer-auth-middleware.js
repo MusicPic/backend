@@ -3,7 +3,6 @@
 import HttpError from 'http-errors';
 import jsonWebToken from 'jsonwebtoken';
 import Account from '../models/account';
-import logger from './logger';
 
 const promisify = callbackStyleFunction => (...args) => {
   return new Promise((resolve, reject) => {
@@ -28,7 +27,6 @@ export default (request, response, next) => {
 
   return promisify(jsonWebToken.verify)(token, process.env.TOKEN_SECRET)
     .catch((error) => {
-      logger.log(logger.INFO, 'go in here');
       return next(new HttpError(401, `AUTH BEARER - Json webtoken Error ${error}`));
     })
     .then((decryptedToken) => {

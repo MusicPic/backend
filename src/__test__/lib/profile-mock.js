@@ -1,7 +1,6 @@
 'use strict';
 
 import faker from 'faker';
-import logger from '../../lib/logger';
 import Profile from '../../models/profile';
 import { createAccountMock, removeAccountMock } from './account-mock';
 
@@ -12,7 +11,6 @@ const createProfileMock = () => {
   return createAccountMock()
     .then((accountSetMock) => {
       resultMock = accountSetMock;
-      logger.log(logger.INFO, `ACCOUNT ID in MOCK, ${resultMock.account._id}`);
 
       return new Profile({
         username: faker.name.firstName(),
@@ -22,7 +20,6 @@ const createProfileMock = () => {
     })
     .then((profile) => {
       resultMock.profile = profile;
-      logger.log(logger.INFO, `PROFILE MOCK RETURS:${resultMock}`);
       return resultMock;
     });
 };

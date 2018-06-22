@@ -12,16 +12,11 @@ const OPEN_ID_URL = 'https://api.spotify.com/v1/me';
 const accountRouter = new Router();
 
 accountRouter.get('/login', (request, response) => {
-  logger.log(logger.INFO, '__STEP 3.1__ - receiving code');
-  logger.log(logger.INFO, `req query ${request.query.code}`);
   let accessToken;
 
   if (!request.query.code) {
     response.redirect(process.env.CLIENT_URL);
   } else {
-    logger.log(logger.INFO, '__CODE__', request.query.code);
-    logger.log(logger.INFO, '__STEP 3.2__ - sending code back');
-
     return superagent.post(SPOTIFY_OAUTH_URL)
       .type('form')
       .send({
@@ -32,9 +27,6 @@ accountRouter.get('/login', (request, response) => {
         redirect_uri: `${process.env.API_URL}/login`,
       })
       .then((tokenResponse) => {
-        logger.log(logger.INFO, '__STEP 3.3__ - access token');
-        logger.log(logger.INFO, tokenResponse.body);
-
         if (!tokenResponse.body.access_token) {
           response.redirect(process.env.CLIENT_URL);
         }
@@ -44,8 +36,6 @@ accountRouter.get('/login', (request, response) => {
           .set('Authorization', `Bearer ${accessToken}`);
       })
       .then((openIdResponse) => {
-        logger.log(logger.INFO, '__STEP 4__ - request to open id api');
-
         Account.findOne({ email: openIdResponse.body.email })
           .then((resAccount) => {
             if (!resAccount) {
