@@ -11,10 +11,6 @@ const pictureSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  // createdOn: {
-  //   type: Date,
-  //   default: () => new Date(), 
-  // },
   profile: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'profile',
