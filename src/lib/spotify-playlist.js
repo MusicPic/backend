@@ -7,17 +7,19 @@ require('dotenv').config();
 
 const spotifyUri = 'https://api.spotify.com/v1/search';
 
-const getPlaylist = (searchTerm) => {
+const getPlaylist = (searchTerm, spotifyToken) => {
   return superagent.get(spotifyUri)
     .query({
       q: searchTerm,
       type: 'playlist',
-      limit: 1,
+      limit: 10,
     })
     .type('application/json')
-    .set({ Authorization: `Bearer ${process.env.SPOTIFY_OAUTH_TOKEN}` })
+    .set({ Authorization: `Bearer ${spotifyToken}` })
     .then((data) => {
-      return data.body.playlists.items[0];
+      const playlistArray = data.body.playlists.items;
+      const randomPlaylist = playlistArray[Math.floor(Math.random() * playlistArray.length)];
+      return { playlist: randomPlaylist, emotion: searchTerm };
     })
     .catch((err) => {
       logger.log(logger.ERROR, `ERR, ${err}`);

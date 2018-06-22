@@ -1,9 +1,12 @@
 'use strict';
 
-const superagent = require('superagent');
+import superagent from 'superagent';
+import HttpError from 'http-errors';
+
 require('dotenv').config();
 
-const azureUpload = (imageUrl) => {
+
+const azureUpload = (image) => {
   // this function expects an image url, then sends a request to azure face api
   return superagent.post(process.env.URI_BASE)
     .query({ 
@@ -13,7 +16,7 @@ const azureUpload = (imageUrl) => {
     })
     .type('application/json')
     .set('Ocp-Apim-Subscription-Key', process.env.AZURE_KEY)
-    .send(`{"url": "${imageUrl}"}`)
+    .send(`{"url": "${image}"}`)
     .then((response) => {
       // emotionData holds an object with the emotion keys on the first response object 
       // (the first face, if the image has many faces)
@@ -30,10 +33,8 @@ const azureUpload = (imageUrl) => {
       return spotifySearchTerm[0];
     })
     .catch((err) => {
-      throw err;
+      return new HttpError(400, err);
     });
 };
-// to test this file manually, navigate to this folder in the CLI, update the .env file and call 
-// azureUpload(trialUrl)
 
 export default azureUpload;

@@ -1,7 +1,6 @@
 'use strict';
 
 import superagent from 'superagent';
-import logger from '../lib/logger';
 import { startServer, stopServer } from '../lib/server';
 import { createAccountMock } from './lib/account-mock';
 import { removeProfileMock, createProfileMock } from './lib/profile-mock';
@@ -19,7 +18,6 @@ describe('PROFILE SCHEMA', () => {
       return createAccountMock()
         .then((accountSetMock) => {
           accountMock = accountSetMock;
-          logger.log(logger.INFO, 'test');
           return superagent.post(`${apiURL}/profile`)
             .set('Authorization', `Bearer ${accountSetMock.token}`)
             .send({
@@ -86,15 +84,17 @@ describe('PROFILE SCHEMA', () => {
     });
     
     test('POST - should return a 409 status code if there are duplicate unique key values.', () => {
-      const mock = {};
+      let mock = {};
+
       return createProfileMock()
         .then((accountSetMock) => {
-          mock.account = accountSetMock;
+          mock = accountSetMock;
+
           return superagent.post(`${apiURL}/profile`)
-            .set('Authorization', `Bearer ${mock.account.accountSetMock.token}`)
+            .set('Authorization', `Bearer ${mock.token}`)
             .send({
               username: 'David',
-              account: mock.account.profile.account,
+              account: mock.account._id,
             });
         })
         .then(Promise.reject)
@@ -105,14 +105,15 @@ describe('PROFILE SCHEMA', () => {
   });
 
   describe('GET /profile', () => { 
-    test('GET - should return a 200 status code and the newly created profile.', () => {
+    test('GET - should return a 200 status code and profile', () => {
       let profileMock = null;
+
       return createProfileMock()
         .then((profileSetMock) => {
           profileMock = profileSetMock;
 
-          return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
-            .set('Authorization', `Bearer ${profileMock.accountSetMock.token}`)
+          return superagent.get(`${apiURL}/profile/me`)
+            .set('Authorization', `Bearer ${profileMock.token}`)
             .then((response) => {
               expect(response.status).toEqual(200);
               expect(response.body.username).toEqual(profileMock.profile.username);
@@ -121,58 +122,58 @@ describe('PROFILE SCHEMA', () => {
             });
         });
     });
-  });
 
-  test('GET - should return a 400 for no token being passed.', () => {
-    let profileMock = null;
-    return createProfileMock()
-      .then((profileSetMock) => {
-        profileMock = profileSetMock;
-        return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
-          .catch((error) => {
-            expect(error.status).toEqual(400);
-          });
-      });
-  });
 
-  test('GET - should return a 401 for an invalid token.', () => {
-    let profileMock = null;
-    return createProfileMock()
-      .then((profileSetMock) => {
-        profileMock = profileSetMock;
-        return superagent.get(`${apiURL}/profile/${profileMock.profile._id}`)
-          .set('Authorization', 'Bearer 1234')
-          .then(Promise.reject)
-          .catch((error) => {
-            expect(error.status).toEqual(401);
-          });
-      });
-  });
+    test('GET - should return a 400 for no token being passed.', () => {
+      return createProfileMock()
+        .then(() => {
+          return superagent.get(`${apiURL}/profile/me`)
+            .catch((error) => {
+              expect(error.status).toEqual(400);
+            });
+        });
+    });
 
-  test('GET - should return a 404 for an invalid id', () => {
-    let profileMock = null;
-    return createProfileMock()
-      .then((setProfleMock) => {
-        profileMock = setProfleMock;
-        return superagent.get(`${apiURL}/profile/badID`)
-          .set('Authorization', `Bearer ${profileMock.accountSetMock.token}`)
-          .then(Promise.reject)
-          .catch((error) => {
-            expect(error.status).toEqual(404);
-          });
-      });
+    test('GET - should return a 401 for an invalid token.', () => {
+      return createProfileMock()
+        .then(() => {
+          return superagent.get(`${apiURL}/profile/me`)
+            .set('Authorization', 'Bearer 1234')
+            .then(Promise.reject)
+            .catch((error) => {
+              expect(error.status).toEqual(401);
+            });
+        });
+    });
+
+    test('GET - should return a 404 for an invalid id', () => {
+      let profileMock = null;
+
+      return createProfileMock()
+        .then((setProfleMock) => {
+          profileMock = setProfleMock;
+
+          return superagent.get(`${apiURL}/profile/badID`)
+            .set('Authorization', `Bearer ${profileMock.token}`)
+            .then(Promise.reject)
+            .catch((error) => {
+              expect(error.status).toEqual(404);
+            });
+        });
+    });
   });
 
 
   describe('PUT /profile', () => {
     test('PUT - should return a 200 status code if successful.', () => {
       let profileToUpdate = null;
+
       return createProfileMock()
         .then((profile) => {
           profileToUpdate = profile;
 
           return superagent.put(`${apiURL}/profile/${profileToUpdate.profile._id}`)
-            .set('Authorization', `Bearer ${profileToUpdate.accountSetMock.token}`)
+            .set('Authorization', `Bearer ${profileToUpdate.token}`)
             .send({
               username: 'test',
               avatar: 'avatar_string',
@@ -189,9 +190,11 @@ describe('PROFILE SCHEMA', () => {
 
   test('PUT - should return a 400 status code for no token being passed.', () => {
     let profileToUpdate = null;
+
     return createProfileMock()
       .then((profile) => {
         profileToUpdate = profile;
+
         return superagent.put(`${apiURL}/profile/${profileToUpdate.profile._id}`)
           .send({
             firstName: 'test',
@@ -206,9 +209,11 @@ describe('PROFILE SCHEMA', () => {
 
   test('PUT - should return a 401 status code for an invalid token being passed.', () => {
     let profileToUpdate = null;
+
     return createProfileMock()
       .then((profile) => {
         profileToUpdate = profile;
+
         return superagent.put(`${apiURL}/profile/${profileToUpdate.profile._id}`)
           .set('Authorization', 'Bearer invalidToken')
           .send({
@@ -224,11 +229,13 @@ describe('PROFILE SCHEMA', () => {
 
   test('PUT - should return a 404 status code for a bad id being passed.', () => {
     let profileToUpdate = null;
+
     return createProfileMock()
       .then((profile) => {
         profileToUpdate = profile;
+
         return superagent.put(`${apiURL}/profile/badID`)
-          .set('Authorization', `Bearer ${profileToUpdate.accountSetMock.token}`)
+          .set('Authorization', `Bearer ${profileToUpdate.token}`)
           .send({
             username: 'test',
           });
@@ -240,25 +247,27 @@ describe('PROFILE SCHEMA', () => {
   });
 
   test('PUT - should return a 409 status code for duplicate unique keys.', () => {
-    const mock = {};
-    const mock2 = {};
+    let mock = {};
+    let mock2 = {};
+
     return createAccountMock()
       .then((account1) => {
-        mock.account1 = account1;
+        mock = account1;
+
         return superagent.post(`${apiURL}/profile`)
-          .set('Authorization', `Bearer ${mock.account1.token}`)
+          .set('Authorization', `Bearer ${mock.token}`)
           .send({
             username: 'Joanna',
-            account: mock.account1.account._id,
+            account: mock.account._id,
           });
       })
       .then(() => {
         return createProfileMock()
           .then((account2) => {
-            mock2.account2 = account2;
+            mock2 = account2;
 
-            return superagent.put(`${apiURL}/profile/${mock2.account2.profile._id}`)
-              .set('Authorization', `Bearer ${mock2.account2.accountSetMock.token}`)
+            return superagent.put(`${apiURL}/profile/${mock2.profile._id}`)
+              .set('Authorization', `Bearer ${mock2.token}`)
               .send({ username: 'Joanna' });
           })
           .then(Promise.reject)
@@ -271,11 +280,12 @@ describe('PROFILE SCHEMA', () => {
   describe('DELETE /profile', () => {
     test('DELETE - Should return 204 for deleted profile', () => {
       let deleteProfileMock = null;
+
       return createProfileMock()
         .then((profileToDelete) => {
           deleteProfileMock = profileToDelete;
           return superagent.delete(`${apiURL}/profile/${deleteProfileMock.profile._id}`)
-            .set('Authorization', `Bearer ${deleteProfileMock.accountSetMock.token}`)
+            .set('Authorization', `Bearer ${deleteProfileMock.token}`)
             .then((response) => {
               expect(response.status).toEqual(204);
             });
@@ -284,6 +294,7 @@ describe('PROFILE SCHEMA', () => {
 
     test('DELETE - should return 400 if not authorized', () => {
       let deleteProfileMock = null;
+
       return createProfileMock()
         .then((profileToDelete) => {
           deleteProfileMock = profileToDelete;
