@@ -10,6 +10,7 @@ import Picture from '../models/picture';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
 import logger from '../lib/logger';
 import getPlaylist from '../lib/spotify-playlist';
+import superagent from 'superagent';
 // import Profile from '../models/profile';
 
 
@@ -41,8 +42,14 @@ pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePic
           );
           return getPlaylist(keyword, request.account.accessToken)
             .then((playlist) => {
-              console.log(playlist.external_urls.spotify);
-              return response.json(playlist.external_urls.spotify);
+              return superagent.get(`https://api.spotify.com/v1/users/${playlist.owner.id}/playlists/${playlist.id}/tracks`)
+                .type('application/json')
+                .set({ Authorization: `Bearer ${request.account.accessToken}` })
+                .then((songs) => {
+                  playlist.tracks = songs.body.items.map(x => x.track.name);
+                  // console.log(playlist.external_urls.spotify);
+                  return response.json(playlist);
+                });
             });
         });
     })

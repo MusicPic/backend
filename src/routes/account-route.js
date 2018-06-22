@@ -51,8 +51,15 @@ accountRouter.get('/login', (request, response) => {
             if (!resAccount) {
               logger.log(logger.INFO, 'Creating new account');
 
+              let name;
+              if (!openIdResponse.body.display_name) {
+                name = 'Spotify User';
+              } else {
+                name = openIdResponse.body.display_name;
+              }
+
               return Account.create(
-                openIdResponse.body.display_name, 
+                name,
                 openIdResponse.body.email, 
                 openIdResponse.body.id, 
                 accessToken,
