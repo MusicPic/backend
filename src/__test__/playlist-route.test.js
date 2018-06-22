@@ -1,6 +1,7 @@
 'use strict';
 
 import superagent from 'superagent';
+import HttpError from 'http-errors';
 import { startServer, stopServer } from '../lib/server';
 import { removeProfileMock, createProfileMock } from './lib/profile-mock';
 
@@ -22,35 +23,14 @@ describe('PLAYLIST SCHEMA', () => {
             .set('Authorization', `Bearer ${accountMock.token}`);
         })
         .then((response) => {
-          console.log(response.body);
           expect(response.status).toEqual(200);
           expect(response.body.profile._id).toEqual(accountMock.profile._id.toString());
           expect(response.body.profile.username).toEqual(accountMock.profile.username);
           expect(response.body.profile.playlists).toBeInstanceOf(Array);
         })
         .catch((error) => {
-          console.log('Error______', error);
+          return new HttpError(400, error);
         });
     });
-    //     test('POST - should return a error status when failing to create a playlist', () => {
-    //       let accountMock = null;
-    //       return createProfileMock()
-    //         .then((accountSetMock) => {
-    //           accountMock = accountSetMock;
-    //           return superagent.post(`${apiURL}/profile/playlist`)
-    //             .set('Authorization', `Bearer ${accountMock.token}`);
-    //         })
-    //         .then((response) => {
-    //           logger.log(logger.INFO, `ASM2-----------, ${(accountMock.profile)}`);
-    //           console.log('test response2_______', response.body.profile);
-    //           expect(response.status).toEqual(200);
-    //           expect(response.body.profile._id).toEqual(accountMock.profile._id.toString());
-    //           expect(response.body.profile.username).toEqual(accountMock.profile.username);
-    //           expect(response.body.profile.playlists).toBeInstanceOf(Array);
-    //         })
-    //         .catch((error) => {
-    //           console.log('Error______', error);
-    //         });
-    //     });
   });
 });

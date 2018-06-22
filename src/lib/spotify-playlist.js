@@ -19,9 +19,7 @@ const getPlaylist = (searchTerm, spotifyToken) => {
     .then((data) => {
       const playlistArray = data.body.playlists.items;
       const randomPlaylist = playlistArray[Math.floor(Math.random() * playlistArray.length)];
-      // console.log(playlistArray);
-      console.log(randomPlaylist);
-      return randomPlaylist;
+      return { playlist: randomPlaylist, emotion: searchTerm };
     })
     .catch((err) => {
       logger.log(logger.ERROR, `ERR, ${err}`);
