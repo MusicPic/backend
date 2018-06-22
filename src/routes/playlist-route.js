@@ -16,18 +16,14 @@ const searchTerm = 'joanna';
 playlistRouter.post('/profile/playlist', bearerAuthMiddleware, jsonParser, (request, response, next) => {
   return Profile.findOne({ account: request.account._id })
     .then((profile) => {
-      return getPlaylist(searchTerm)
+      return getPlaylist(searchTerm, process.env.SPOTIFY_OAUTH_TOKEN)
         .then((data) => {
           return Playlist.create(
             data.name,
             data.id,
             data.external_urls.spotify,
             profile._id,
-          )
-            .then((playlist) => {
-              profile.playlists.push(playlist);
-              return profile;
-            });
+          );
         })
         .catch(error => logger.log(logger.ERROR, `${error}`));
     }) 

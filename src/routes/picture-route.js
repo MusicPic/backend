@@ -2,8 +2,8 @@
 
 import { Router } from 'express';
 import { json } from 'body-parser';
-import multer from 'multer';
 import superagent from 'superagent';
+import multer from 'multer';
 import HttpError from 'http-errors';
 import s3Upload from '../lib/s3';
 import azureUpload from '../lib/azure-upload';
