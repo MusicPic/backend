@@ -9,7 +9,7 @@ describe('PICTURE SCHEMA', () => {
   afterEach(removeProfileMock);
 
   describe('POST /picture', () => {
-    test('POST - should return a 200 status code and the newly created picture.', () => {
+    test('POST - should return a 404 status code if no account is passed.', () => {
     });
   });
 });

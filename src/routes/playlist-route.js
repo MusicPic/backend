@@ -23,11 +23,11 @@ playlistRouter.post('/profile/playlist', bearerAuthMiddleware, jsonParser, (requ
             data.id,
             data.external_urls.spotify,
             profile._id,
-          )
-            .then((playlist) => {
-              profile.playlists.push(playlist);
-              return profile;
-            });
+          );
+          // .then((playlist) => {
+          //   profile.playlists.push(playlist);
+          //   return profile;
+          // });
         })
         .catch(error => logger.log(logger.ERROR, `${error}`));
     }) 
