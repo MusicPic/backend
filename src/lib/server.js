@@ -2,13 +2,22 @@
 
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import logger from './logger';
 import errorMiddleware from './error-middleware';
+import accountRouter from '../routes/account-route';
+import profileRouter from '../routes/profile-router';
+import playlistRouter from '../routes/playlist-route';
+import pictureRouter from '../routes/picture-route';
 
 const app = express();
 let server = null;
 
-// routes will be app.use'd here
+app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
+app.use(accountRouter);
+app.use(profileRouter);
+app.use(playlistRouter);
+app.use(pictureRouter);
 
 app.all('*', (request, response) => {
   logger.log(logger.INFO, 'Returning a 404 from the catch-all/default route');
