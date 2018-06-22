@@ -31,7 +31,7 @@ const azureUpload = (image) => {
       const spotifySearchTerm = getMax(emotionData);
       // it should return an array of strings, the first index, 
       // beging the single most significant emotion -- 'sadness'
-      logger.log(logger.INFO, 'SEARCH TERM:', spotifySearchTerm[0]);
+      logger.log(logger.INFO, `SEARCH TERM: ${spotifySearchTerm[0]}`);
       return spotifySearchTerm[0];
     })
     .catch((err) => {

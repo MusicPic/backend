@@ -24,6 +24,7 @@ const s3Upload = (path, key) => {
       console.log('S3 RESPONSE: ', response);
       return fs.remove(path)
         .then(() => {
+          console.log(response.Location);
           return response.Location;
         })
         .catch(err => Promise.reject(err));

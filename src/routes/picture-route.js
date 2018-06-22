@@ -2,6 +2,7 @@
 
 import { Router } from 'express';
 import { json } from 'body-parser';
+import superagent from 'superagent';
 import multer from 'multer';
 import HttpError from 'http-errors';
 import { s3Upload } from '../lib/s3';
@@ -10,6 +11,7 @@ import Picture from '../models/picture';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
 import logger from '../lib/logger';
 import getPlaylist from '../lib/spotify-playlist';
+
 // import Profile from '../models/profile';
 
 
@@ -19,9 +21,7 @@ const multerUpload = multer({ dest: `${__dirname}/../temp` });
 const pictureRouter = new Router();
 
 pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePicture'), jsonParser, (request, response, next) => {
-  logger.log(logger.INFO, 'REQUEST FILE', request.file);
-  logger.log(logger.INFO, 'REQUEST PICTURE PATH', request.file.path);
-  logger.log(logger.INFO, 'ACCOUNT INFO', request.account._id);
+  console.log('stuff vinicio would hate', request.account);
   if (!request.account._id) {
     return next(new HttpError(404, 'ASSET ROUTER ERROR: asset not found, no account! '));
   }
@@ -33,27 +33,31 @@ pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePic
 
   return s3Upload(picture.path, key)
     .then((url) => {
-      logger.log(logger.INFO, 'URL AFTER AWS', url);
+      logger.log(logger.INFO, `URL AFTER AWS: ${url}`);
       return azureUpload(url)
         .then((keyword) => {
-          logger.log(logger.INFO, 'KEYWORD AFTER AZURE', keyword);
-
-          return Picture.create(
+          logger.log(logger.INFO, `KEYWORD AFTER AZURE: ${keyword}`);
+          Picture.create(
             keyword, 
             url, 
           );
-        })
-        .then((newPicture) => {
-          logger.log(logger.INFO, 'MONGO PICTURE', newPicture);
-          return response.json(newPicture);
-        })
-
+          return getPlaylist(keyword, request.account.accessToken)
+            .then((playlist) => {
+              return superagent.get(`https://api.spotify.com/v1/users/${playlist.owner.id}/playlists/${playlist.id}/tracks`)
+                .type('application/json')
+                .set({ Authorization: `Bearer ${request.account.accessToken}` })
+                .then((songs) => {
+                  playlist.tracks = songs.body.items.map(x => x.track.name);
+                  // console.log(playlist.external_urls.spotify);
+                  return response.json(playlist);
+                });
+            });
+        });
     })
     .catch(next);
 });
 
 export default pictureRouter;
-
 
 // pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePicture'), jsonParser, (request, response, next) => {
 //   console.log('REQUEST FILE', request.file);
