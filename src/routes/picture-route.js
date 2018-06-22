@@ -41,14 +41,15 @@ pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePic
             url, 
           );
           return getPlaylist(keyword, request.account.accessToken)
-            .then((playlist) => {
-              return superagent.get(`https://api.spotify.com/v1/users/${playlist.owner.id}/playlists/${playlist.id}/tracks`)
+            .then((res) => {
+              // { playlist: randomPlaylist, emotion: searchTerm };
+              return superagent.get(`https://api.spotify.com/v1/users/${res.playlist.owner.id}/playlists/${res.playlist.id}/tracks`)
                 .type('application/json')
                 .set({ Authorization: `Bearer ${request.account.accessToken}` })
                 .then((songs) => {
-                  playlist.tracks = songs.body.items.map(x => x.track.name);
+                  res.tracks = songs.body.items.map(x => x.track.name);
                   // console.log(playlist.external_urls.spotify);
-                  return response.json(playlist);
+                  return response.json(res);
                 });
             });
         });
