@@ -33,4 +33,4 @@ const s3Upload = (path, key) => {
     });
 };
 
-export default { s3Upload };
+export default s3Upload;
