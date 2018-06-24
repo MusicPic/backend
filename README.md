@@ -40,6 +40,23 @@ mongod
 npm run start
 ```
 
+*In your .env file*
+```
+CLIENT_URL: http://localhost:8080
+API_URL: http://localhost:3000
+PORT: 3000
+NODE_ENV: development
+MONGODB_URI: mongodb://localhost/spotify
+SPOTIFY_CLIENT_ID: From Spotify when registering application
+CLIENT_SECRET: From Spotify
+TOKEN_SECRET: Any long string of letters and numbers
+AWS_BUCKET: name of your AWS bucket
+AWS_ACCESS_KEY_ID: AWS Access key
+AWS_SECRET_ACCESS_KEY: AWS Secret key
+AZURE_KEY: Key for Azure Face API
+URI_BASE: Azure Face API endpoint
+```
+
 ## Functionality
 
   ```GET /login```
