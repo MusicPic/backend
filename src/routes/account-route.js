@@ -13,7 +13,6 @@ const accountRouter = new Router();
 
 accountRouter.get('/login', (request, response) => {
   let accessToken;
-
   if (!request.query.code) {
     response.redirect(process.env.CLIENT_URL);
   } else {
