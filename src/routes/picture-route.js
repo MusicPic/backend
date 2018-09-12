@@ -43,7 +43,16 @@ pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePic
                 .type('application/json')
                 .set({ Authorization: `Bearer ${request.account.accessToken}` })
                 .then((songs) => {
-                  res.tracks = songs.body.items.map(x => x.track.name);
+                  // console.log('this is here', songs.body.items);
+                  console.log('----------------asdfasdfasf--------', songs.body.items[0].track.album.images);
+                  res.tracks = {};
+                  res.tracks.song = songs.body.items.slice(0, 10).map(x => x.track.name);
+                  const artists = songs.body.items.slice(0, 10).map(y => y.track.artists[0].name);
+                  const albumImg = songs.body.items.slice(0, 10).map(x => x.track.album.images[0].url);
+                  for (let i = 0; i < res.tracks.song.length; i++) {
+                    res.tracks.song[i] = [res.tracks.song[i], artists[i], albumImg[i]];
+                  }
+                  console.log('-------------here----------', res.tracks);
                   return response.json(res);
                 });
             });
