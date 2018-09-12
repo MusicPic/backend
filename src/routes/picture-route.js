@@ -44,15 +44,15 @@ pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePic
                 .set({ Authorization: `Bearer ${request.account.accessToken}` })
                 .then((songs) => {
                   // console.log('this is here', songs.body.items);
-                  console.log('----------------asdfasdfasf--------', songs.body.items[0].track.album.images);
-                  res.tracks = {};
-                  res.tracks.song = songs.body.items.slice(0, 10).map(x => x.track.name);
-                  const artists = songs.body.items.slice(0, 10).map(y => y.track.artists[0].name);
+                  console.log('----------------asdfasdfasf--------', songs.body.items[0].track.album.name);
+                  res.song = songs.body.items.slice(0, 10).map(x => x.track.name);
+                  const artists = songs.body.items.slice(0, 10).map(x => x.track.artists[0].name);
                   const albumImg = songs.body.items.slice(0, 10).map(x => x.track.album.images[0].url);
-                  for (let i = 0; i < res.tracks.song.length; i++) {
-                    res.tracks.song[i] = [res.tracks.song[i], artists[i], albumImg[i]];
+                  const albumTitle = songs.body.items.slice(0, 10).map(x => x.track.album.name);
+                  for (let i = 0; i < res.song.length; i++) {
+                    res.song[i] = [res.song[i], artists[i], albumImg[i], albumTitle[i]];
                   }
-                  console.log('-------------here----------', res.tracks);
+                  console.log('-------------here----------', res.song);
                   return response.json(res);
                 });
             });
