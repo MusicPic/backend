@@ -12,6 +12,8 @@ import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
 import logger from '../lib/logger';
 import getPlaylist from '../lib/spotify-playlist';
 
+// const util = require('util');
+
 const jsonParser = json();
 const multerUpload = multer({ dest: `${__dirname}/../temp` });
 // multer attaches a file property to the request object
@@ -43,7 +45,11 @@ pictureRouter.post('/picture', bearerAuthMiddleware, multerUpload.single('thePic
                 .type('application/json')
                 .set({ Authorization: `Bearer ${request.account.accessToken}` })
                 .then((songs) => {
-                  res.tracks = songs.body.items.map(x => x.track.name);
+                  res.tracks = {}; 
+                  res.tracks.name = songs.body.items.map(x => x.track.name);
+                  res.tracks.artists = songs.body.items.map(x => x.track.artists[0].name);
+                  console.log('RESPONSE TRACKS', res.tracks);
+                  // console.log('RESPONSE ARTISTS', response.artists);
                   return response.json(res);
                 });
             });
